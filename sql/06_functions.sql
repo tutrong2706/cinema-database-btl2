@@ -34,7 +34,7 @@ DETERMINISTIC
 BEGIN
     DECLARE v_Count INT;
     
-    SELECT COUNT(*) INTO v_Count
+    SELECT COUNT(*) INTO v_count
     FROM VE_XEM_PHIM
     WHERE MaSuatChieu = p_MaSuatChieu
       AND MaPhong = p_MaPhong
@@ -42,7 +42,7 @@ BEGIN
       AND SoGhe = p_SoGhe
       AND TrangThai <> 'Hủy';
       
-    IF v_Count > 0 THEN
+    IF v_count > 0 THEN
         RETURN 0; -- Đã có người đặt
     ELSE
         RETURN 1; -- Còn trống
@@ -62,6 +62,42 @@ BEGIN
     WHERE s.MaSuatChieu = p_MaSuatChieu;
     
     RETURN v_TenPhim;
+END$$
+
+-- 4. Hàm xếp hạng thành viên
+CREATE FUNCTION FUNC_XepHangThanhVien(p_MaKH VARCHAR(20)) 
+RETURNS VARCHAR(20)
+DETERMINISTIC
+BEGIN
+    DECLARE v_TongTien DECIMAL(18,2) DEFAULT 0;
+    DECLARE v_TienDon DECIMAL(18,2);
+    DECLARE done INT DEFAULT FALSE;
+    
+    -- Khai báo con trỏ duyệt qua các đơn hàng đã thanh toán
+    DECLARE cur_donhang CURSOR FOR 
+        SELECT TongTien FROM DON_HANG 
+        WHERE MaNguoiDung_KH = p_MaKH AND TrangThai = 'Đã thanh toán';
+        
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
+    OPEN cur_donhang;
+    
+    read_loop: LOOP
+        FETCH cur_donhang INTO v_TienDon;
+        IF done THEN
+            LEAVE read_loop;
+        END IF;
+        SET v_TongTien = v_TongTien + v_TienDon;
+    END LOOP;
+    
+    CLOSE cur_donhang;
+    
+    -- Logic xếp hạng
+    IF v_TongTien > 10000000 THEN RETURN 'Platinum';
+    ELSEIF v_TongTien > 5000000 THEN RETURN 'Gold';
+    ELSEIF v_TongTien > 2000000 THEN RETURN 'Silver';
+    ELSE RETURN 'Bronze';
+    END IF;
 END$$
 
 DELIMITER ;

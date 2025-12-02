@@ -66,4 +66,12 @@ BEGIN
     ORDER BY dh.ThoiGianDat DESC;
 END$$
 
+-- Tìm kiếm phim theo tên (dùng cho Admin UI)
+DELIMITER $$
+CREATE PROCEDURE SP_TimKiemPhim (IN p_TuKhoa VARCHAR(100))
+BEGIN
+    SELECT * FROM PHIM 
+    WHERE TenPhim LIKE CONCAT('%', p_TuKhoa, '%')
+    ORDER BY NgayKhoiChieu DESC;
+END$$
 DELIMITER ;
