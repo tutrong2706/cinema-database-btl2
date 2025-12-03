@@ -187,9 +187,9 @@ class authService {
             MaPhim: phim.MaPhim,
             TenPhim: phim.TenPhim,
             ThoiLuong: phim.ThoiLuong,
-            MoTa: phim.MoTaNoiDung, // Sửa: MoTaNoiDung theo schema
-            Anh: phim.Anh || "", // Schema không có cột Anh, bạn có thể cần thêm hoặc để trống
-            TheLoai: phim.the_loai_phim.map(t => t.TheLoai), // Sửa: t.TheLoai theo schema
+            MoTa: phim.MoTaNoiDung, 
+            Anh: phim.Anh || "", 
+            TheLoai: phim.the_loai_phim.map(t => t.TheLoai), 
             DanhGia: phim.danh_gia
         };
     }
@@ -246,9 +246,15 @@ class authService {
     // Thêm hàm này vào class authService
     async searchPhim(keyword = "") {
         // Gọi SP_TimKiemPhim mà khách cũng dùng được
-        const phims = await prisma.$queryRaw`CALL SP_TimKiemPhim(${keyword})`;
+        const phims = await prisma.$quyerRaw`CALL SP_TimKiemPhim(${keyword})`;
         return phims;
     }
+async getNowShowingPhims() {
+  const phims = await prisma.phim.findMany({
+    select: { MaPhim: true, TenPhim: true, Anh: true }
+  });
+  return phims;
+}
 }
 
 export default new authService();

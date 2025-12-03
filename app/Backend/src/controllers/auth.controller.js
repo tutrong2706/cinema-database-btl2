@@ -194,7 +194,7 @@ class AuthController{
  *         name: MaRapPhim
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string
  *         description: Mã rạp chiếu phim
  *     responses:
  *       200:
@@ -230,7 +230,7 @@ async getPhimsByRap(req, res, next) {
             throw new BadRequestError("Thiếu mã rạp phim");
         }
 
-        const result = await authService.getPhimsByRap(Number(MaRapPhim));
+        const result = await authService.getPhimsByRap(MaRapPhim);
 
         const response = handleSuccessResponse(
             200,
@@ -256,7 +256,7 @@ async getPhimsByRap(req, res, next) {
  *         name: MaPhim
  *         required: true
  *         schema:
- *           type: integer
+ *           type: string   
  *         description: Mã phim
  *     responses:
  *       200:
@@ -305,7 +305,7 @@ async getPhimDetail(req, res, next) {
             throw new BadRequestError("Thiếu mã phim");
         }
 
-        const result = await authService.getPhimDetail(Number(MaPhim));
+        const result = await authService.getPhimDetail(MaPhim);
 
         const response = handleSuccessResponse(
             200,
@@ -455,7 +455,38 @@ async getSuatChieus(req, res, next) {
             next(error);
         }
     }
-
+/**
+ * @swagger
+ * /auth/dang-chieu:
+ *   get:
+ *     summary: Lấy danh sách phim đang chiếu (chỉ gồm mã, tên và ảnh)
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Danh sách phim
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   MaPhim:
+ *                     type: string
+ *                   TenPhim:
+ *                     type: string
+ *                   Anh:
+ *                     type: string
+ */
+async getNowShowingPhims(req, res, next) {
+    try {
+        const phims = await authService.getNowShowingPhims();
+        const response = handleSuccessResponse(200, "Danh sách phim đang chiếu", phims);
+        res.status(200).json(response);
+    } catch (error) {
+        next(error);
+    }
+}
 }
 
 export default new AuthController();
