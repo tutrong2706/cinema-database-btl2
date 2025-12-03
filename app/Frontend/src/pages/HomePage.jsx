@@ -15,21 +15,26 @@ const HomePage = () => {
     const [year, setYear] = useState('');
 
     useEffect(() => {
-        axiosClient.get('/auth/phims/search?keyword=') 
-            .then(res => {
-                const list = res.data.meta || [];
+        const fetchPhims = async () => {
+            try {
+                // Gọi API giống cách AdminPage dùng: gửi params trong đối tượng axios
+                const res = await axiosClient.get('/auth/phims/search', { params: { keyword: '' } });
+                const list = res.data?.meta || [];
                 setPhims(list);
                 if (list.length > 0) {
-                    // Đảm bảo URL ảnh của phim nổi bật hợp lệ
                     const featured = list[0];
                     if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
                         setFeaturedMovie(featured);
                     } else {
-                        setFeaturedMovie({...featured, Anh: DEFAULT_BANNER}); // Gán ảnh mặc định nếu URL không hợp lệ
+                        setFeaturedMovie({ ...featured, Anh: DEFAULT_BANNER });
                     }
                 }
-            })
-            .catch(err => console.log(err));
+            } catch (err) {
+                console.error('Error fetching phims:', err);
+            }
+        };
+
+        fetchPhims();
     }, []);
 
     const handleSearch = () => {
@@ -38,6 +43,8 @@ const HomePage = () => {
 
     // Lấy URL banner cuối cùng
     const bannerUrl = featuredMovie?.Anh || DEFAULT_BANNER;
+    // Lấy khoảng 3 phim để hiển thị ở mục "Phim Đang Chiếu"
+    const showingPhims = phims.slice(0, 3);
 
     return (
         <div className="min-h-screen bg-gray-950 pb-20">
@@ -121,10 +128,10 @@ const HomePage = () => {
                         </button>
                     </div>
                     {/* Horizontal Scroll Container */}
-                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
-                        {phims.map(phim => (
+                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory items-start">
+                        {showingPhims.map(phim => (
                             <div key={phim.MaPhim} className="snap-center">
-                                <MovieCard movie={phim} />
+                                <MovieCard movie={phim} variant="large" />
                             </div>
                         ))}
                     </div>
@@ -141,10 +148,12 @@ const HomePage = () => {
                             <option className="bg-gray-900">Tuần này</option>
                         </select>
                     </div>
-                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
-                        {[...phims].reverse().map(phim => (
+                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory items-start">
+                        {[
+                            ...[...phims].sort((a,b) => (b.DiemDanhGia || 0) - (a.DiemDanhGia || 0))
+                        ].map(phim => (
                             <div key={`trend-${phim.MaPhim}`} className="snap-center">
-                                <MovieCard movie={phim} />
+                                <MovieCard movie={phim} variant="small" />
                             </div>
                         ))}
                     </div>

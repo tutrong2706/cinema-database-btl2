@@ -1,10 +1,27 @@
 import prisma from "../common/prisma/prisma.init.js";
+import { BadRequestError } from "../helpers/handleError.js";
 
 class AdminService {
     // 1. Tìm kiếm phim (Gọi SP_TimKiemPhim)
     async getPhims(keyword) {
-        const search = keyword || "";
-        // Gọi Stored Procedure bằng Prisma Raw Query
+        const search = (keyword || "").trim();
+
+        // Nếu không truyền keyword -> trả về toàn bộ phim kèm điểm đánh giá trung bình
+        if (!search) {
+            const phims = await prisma.$queryRaw`
+                SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
+                       p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
+                       p.DoTuoi, p.ChuDePhim, p.Anh,
+                       ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
+                FROM PHIM p
+                LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
+                GROUP BY p.MaPhim
+                ORDER BY p.NgayKhoiChieu DESC
+            `;
+            return phims;
+        }
+
+        // Nếu có keyword -> gọi Stored Procedure tìm kiếm (giữ nguyên hành vi cũ)
         const phims = await prisma.$queryRaw`CALL SP_TimKiemPhim(${search})`;
         return phims;
     }

@@ -17,7 +17,7 @@ const Navbar = () => {
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
                 {/* 1. LOGO */}
                 <Link to="/" className="text-2xl font-extrabold tracking-wider text-[#00E5FF] hover:text-white transition duration-300">
-                    MOVIE HUB
+                    HappyCinema
                 </Link>
                 
                 {/* 2. MENU */}
@@ -30,7 +30,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-6">
                     {isAdmin && (
                         <Link to="/admin" className="hidden md:flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition border border-gray-600">
-                            <span>⚙️ Dashboard</span>
+                            <span>⚙️ Chỉnh sửa phim</span>
                         </Link>
                     )}
 
