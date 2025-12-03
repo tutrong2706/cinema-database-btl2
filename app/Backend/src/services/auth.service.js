@@ -256,8 +256,6 @@ async getNowShowingPhims() {
   return phims;
 }
 
-
-
 async getPhimsSortedByRating() {
     const phims = await prisma.phim.findMany({
         select: {
@@ -287,7 +285,16 @@ async getPhimsSortedByRating() {
 
     return sorted;
 }
-
+async filterPhims({ tenPhim, theLoai, nam }) {
+    if (!tenPhim || tenPhim.trim() === "") tenPhim = null;
+    if (!theLoai || theLoai.trim() === "") theLoai = null;
+    if (!nam || nam === 0) nam = null;
+    const result = await prisma.$queryRaw`
+        CALL sp_LocPhimTheoNhieuDieuKien(${tenPhim}, ${theLoai}, ${nam});
+    `;
+     const data = Array.isArray(result[0]) ? result[0] : result;
+    return data;
+}
 }
 
 export default new authService();

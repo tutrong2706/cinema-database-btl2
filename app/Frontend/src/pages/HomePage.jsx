@@ -19,21 +19,21 @@ const HomePage = () => {
 
 
     useEffect(() => {
-        axiosClient.get('/auth/phims/search?keyword=') 
-            .then(res => {
-                const list = res.data.meta || [];
-                setPhims(list);
-                if (list.length > 0) {
-                    // Đảm bảo URL ảnh của phim nổi bật hợp lệ
-                    const featured = list[0];
-                    if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
-                        setFeaturedMovie(featured);
-                    } else {
-                        setFeaturedMovie({...featured, Anh: DEFAULT_BANNER}); // Gán ảnh mặc định nếu URL không hợp lệ
-                    }
-                }
-            })
-            .catch(err => console.log(err));
+        // axiosClient.get('/auth/phims/search?keyword=') 
+        //     .then(res => {
+        //         const list = res.data.meta || [];
+        //         setPhims(list);
+        //         if (list.length > 0) {
+        //             // Đảm bảo URL ảnh của phim nổi bật hợp lệ
+        //             const featured = list[0];
+        //             if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
+        //                 setFeaturedMovie(featured);
+        //             } else {
+        //                 setFeaturedMovie({...featured, Anh: DEFAULT_BANNER}); // Gán ảnh mặc định nếu URL không hợp lệ
+        //             }
+        //         }
+        //     })
+        //     .catch(err => console.log(err));
             axiosClient.get('/auth/dang-chieu')
                     .then(res => {
         const nowShowing = res.data.meta || res.data || [];
@@ -48,10 +48,20 @@ const HomePage = () => {
         .catch(err => console.log('Error fetching top trending movies:', err));
     }, []);
 
-    const handleSearch = () => {
-        navigate(`/search?keyword=${keyword}&genre=${genre}&year=${year}`);
-    };
-
+      const handleSearch = () => {
+    const params = {};
+    if (keyword.trim()) params.tenPhim = keyword.trim();
+    if (genre && genre !== '') params.theLoai = genre;
+    if (year && year !== '') params.nam = year;
+    
+    // ✅ Encode params đúng cách
+    const queryString = Object.keys(params)
+        .map(key => `${key}=${encodeURIComponent(params[key])}`)
+        .join('&');
+    
+    navigate(`/search?${queryString}`);
+};
+    
     // Lấy URL banner cuối cùng
     const bannerUrl = featuredMovie?.Anh || DEFAULT_BANNER;
 

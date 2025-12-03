@@ -18,6 +18,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/search" element={<SearchPage />} /> 
           </Routes>
         </div>
       </div>
