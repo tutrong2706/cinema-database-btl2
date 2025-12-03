@@ -29,34 +29,37 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="flex justify-center items-center h-[80vh]">
-            <form onSubmit={handleLogin} className="bg-gray-800 p-8 rounded-lg shadow-lg w-96">
-                <h2 className="text-2xl font-bold mb-6 text-center text-white">Đăng Nhập</h2>
-                <div className="mb-4">
-                    <label className="block text-gray-300 mb-2">Email</label>
+        <div className="flex justify-center items-center min-h-[calc(100vh-80px)] pt-[80px]">
+            <form 
+                onSubmit={handleLogin} 
+                className="bg-gray-900 p-10 rounded-xl shadow-[0_0_40px_rgba(0,229,255,0.1)] w-full max-w-sm border border-gray-800 transition-all duration-300 hover:shadow-[0_0_50px_rgba(0,229,255,0.2)]"
+            >
+                <h2 className="text-3xl font-extrabold mb-8 text-center text-[#00E5FF]">ĐĂNG NHẬP</h2>
+                <div className="mb-5">
+                    <label className="block text-gray-400 mb-2 text-sm font-medium">Email</label>
                     <input 
                         type="email" 
-                        className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:border-blue-500 outline-none"
+                        className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#00E5FF] outline-none transition placeholder-gray-500"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="a@example.com"
                         required
                     />
                 </div>
-                <div className="mb-6">
-                    <label className="block text-gray-300 mb-2">Mật khẩu</label>
+                <div className="mb-8">
+                    <label className="block text-gray-400 mb-2 text-sm font-medium">Mật khẩu</label>
                     <input 
                         type="password" 
-                        className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600 focus:border-blue-500 outline-none"
+                        className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#00E5FF] outline-none transition placeholder-gray-500"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
-                        placeholder="passA"
+                        placeholder="Mật khẩu của bạn"
                         required
                     />
                 </div>
                 <button 
                     type="submit" 
-                    className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 transition font-bold"
+                    className="w-full bg-[#00E5FF] text-black py-3 rounded-xl hover:bg-[#00cce6] transition font-bold text-lg shadow-[0_0_20px_rgba(0,229,255,0.4)]"
                 >
                     Đăng Nhập
                 </button>
