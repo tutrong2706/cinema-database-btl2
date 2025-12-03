@@ -255,6 +255,39 @@ async getNowShowingPhims() {
   });
   return phims;
 }
+
+
+
+async getPhimsSortedByRating() {
+    const phims = await prisma.phim.findMany({
+        select: {
+            MaPhim: true,
+            TenPhim: true,
+            Anh: true,
+            danh_gia: {
+                select: { DiemSo: true }
+            }
+        }
+    });
+
+    const sorted = phims
+        .map(p => {
+            const rating = p.danh_gia.length
+                ? p.danh_gia.reduce((sum, d) => sum + d.DiemSo, 0) / p.danh_gia.length
+                : 0;
+
+            return {
+                MaPhim: p.MaPhim,
+                TenPhim: p.TenPhim,
+                Anh: p.Anh,
+                Rating: Number(rating.toFixed(2))
+            };
+        })
+        .sort((a, b) => b.Rating - a.Rating);
+
+    return sorted;
+}
+
 }
 
 export default new authService();

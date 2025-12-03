@@ -13,6 +13,10 @@ const HomePage = () => {
     const [keyword, setKeyword] = useState('');
     const [genre, setGenre] = useState('');
     const [year, setYear] = useState('');
+    const [nowShowingPhims, setNowShowingPhims] = useState([]);
+    const [topTrendingPhims, setTopTrendingPhims] = useState([]);
+
+
 
     useEffect(() => {
         axiosClient.get('/auth/phims/search?keyword=') 
@@ -30,6 +34,18 @@ const HomePage = () => {
                 }
             })
             .catch(err => console.log(err));
+            axiosClient.get('/auth/dang-chieu')
+                    .then(res => {
+        const nowShowing = res.data.meta || res.data || [];
+        setNowShowingPhims(nowShowing);
+    })
+    .catch(err => console.log('Error fetching now showing movies:', err));
+     axiosClient.get('/auth/sorted-by-rating')
+        .then(res => {
+           const topMovies = res.data.data || [];
+            setTopTrendingPhims(topMovies);
+        })
+        .catch(err => console.log('Error fetching top trending movies:', err));
     }, []);
 
     const handleSearch = () => {
@@ -122,11 +138,17 @@ const HomePage = () => {
                     </div>
                     {/* Horizontal Scroll Container */}
                     <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
-                        {phims.map(phim => (
+                         {nowShowingPhims.length > 0 ? ( 
+                            nowShowingPhims.map(phim => (
                             <div key={phim.MaPhim} className="snap-center">
-                                <MovieCard movie={phim} />
-                            </div>
-                        ))}
+                                    <MovieCard movie={phim} />
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-400 text-center w-full py-8">
+                                    Đang tải phim đang chiếu...
+                                </p>
+                            )}
                     </div>
                 </div>
 
@@ -142,11 +164,17 @@ const HomePage = () => {
                         </select>
                     </div>
                     <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
-                        {[...phims].reverse().map(phim => (
-                            <div key={`trend-${phim.MaPhim}`} className="snap-center">
-                                <MovieCard movie={phim} />
-                            </div>
-                        ))}
+                       {topTrendingPhims.length > 0 ? (  // top trending_______________________
+                            topTrendingPhims.map(phim => (
+                                <div key={`trend-${phim.MaPhim}`} className="snap-center">
+                                    <MovieCard movie={phim} />
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-400 text-center w-full py-8">
+                                Đang tải phim xu hướng...
+                            </p>
+                        )}
                     </div>
                 </div>
 

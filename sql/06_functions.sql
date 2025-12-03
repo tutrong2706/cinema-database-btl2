@@ -101,3 +101,57 @@ BEGIN
 END$$
 
 DELIMITER ;
+DROP PROCEDURE IF EXISTS sp_LocPhimTheoNhieuDieuKien;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_LocPhimTheoNhieuDieuKien (
+    IN p_TenPhim VARCHAR(200),
+    IN p_TheLoai VARCHAR(50),
+    IN p_Nam INT
+)
+BEGIN
+    -- Kiểm tra nếu thể loại là chuỗi rỗng thì đặt thành NULL để không lọc
+    IF p_TheLoai = '' OR p_TheLoai IS NULL THEN
+        SET p_TheLoai = NULL;
+    END IF;
+    
+    -- Kiểm tra nếu tên phim là chuỗi rỗng thì đặt thành NULL để không lọc
+    IF p_TenPhim = '' OR p_TenPhim IS NULL THEN
+        SET p_TenPhim = NULL;
+    END IF;
+    
+    -- Kiểm tra nếu năm là 0 hoặc NULL thì đặt thành NULL để không lọc
+    IF p_Nam = 0 OR p_Nam IS NULL THEN
+        SET p_Nam = NULL;
+    END IF;
+    
+    -- Câu truy vấn chính: JOIN 2 bảng, có WHERE, ORDER BY
+    SELECT 
+        P.MaPhim,
+        P.TenPhim,
+        -- Giả định tên ảnh, bạn cần bổ sung trường này vào bảng PHIM nếu cần
+        CONCAT('poster/', P.MaPhim, '.jpg') AS HinhAnh, 
+        P.NgayKhoiChieu,
+        TL.TheLoai
+    FROM 
+        PHIM P
+    JOIN 
+        THE_LOAI_PHIM TL ON P.MaPhim = TL.MaPhim
+    WHERE 
+        -- Lọc theo tên phim (sử dụng LIKE và điều kiện IS NOT NULL)
+        (p_TenPhim IS NULL OR P.TenPhim LIKE CONCAT('%', p_TenPhim, '%'))
+        
+        -- Lọc theo thể loại
+        AND (p_TheLoai IS NULL OR TL.TheLoai = p_TheLoai)
+        
+        -- Lọc theo năm công chiếu
+        AND (p_Nam IS NULL OR YEAR(P.NgayKhoiChieu) = p_Nam)
+    
+    -- Sắp xếp theo ngày khởi chiếu mới nhất
+    ORDER BY 
+        P.NgayKhoiChieu DESC, P.TenPhim ASC;
+        
+END //
+
+DELIMITER ;

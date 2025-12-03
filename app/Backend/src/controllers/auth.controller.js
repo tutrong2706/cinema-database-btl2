@@ -487,6 +487,76 @@ async getNowShowingPhims(req, res, next) {
         next(error);
     }
 }
+/**
+ * @swagger
+ * /auth/sorted-by-rating:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Lấy danh sách phim được sắp xếp theo rating
+ *     description: Sắp xếp phim theo điểm trung bình DiemSo (bảng danh_gia)
+ *     responses:
+ *       200:
+ *         description: Thành công
+ */
+async getPhimsSortedByRating(req, res, next) {
+    try {
+        const data = await authService.getPhimsSortedByRating();
+        res.status(200).json({
+            code: 200,
+            message: "Lấy danh sách phim theo rating thành công",
+            data
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
+
+// controllers/authController.js
+
+/**
+ * @swagger
+ * /auth/filter:
+ *   get:
+ *     tags: [Auth]
+ *     summary: Lọc phim theo tên + thể loại + năm (gọi stored procedure)
+ *     parameters:
+ *       - in: query
+ *         name: TenPhim
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: TheLoai
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: Nam
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: Danh sách phim đã lọc
+ */
+async filterPhims(req, res, next) {
+    try {
+        const { TenPhim, TheLoai, Nam } = req.query;
+
+        const data = await authService.filterPhims({
+            tenPhim: TenPhim || null,
+            theLoai: TheLoai || null,
+            nam: Nam ? Number(Nam) : null
+        });
+
+        res.status(200).json({
+            code: 200,
+            message: "Lọc phim thành công",
+            data
+        });
+    } catch (error) {
+        next(error);
+    }
+}
+
 }
 
 export default new AuthController();
