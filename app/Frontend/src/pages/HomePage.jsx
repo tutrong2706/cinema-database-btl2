@@ -13,34 +13,55 @@ const HomePage = () => {
     const [keyword, setKeyword] = useState('');
     const [genre, setGenre] = useState('');
     const [year, setYear] = useState('');
+    const [nowShowingPhims, setNowShowingPhims] = useState([]);
+    const [topTrendingPhims, setTopTrendingPhims] = useState([]);
+
+
 
     useEffect(() => {
-        const fetchPhims = async () => {
-            try {
-                // Gọi API giống cách AdminPage dùng: gửi params trong đối tượng axios
-                const res = await axiosClient.get('/auth/phims/search', { params: { keyword: '' } });
-                const list = res.data?.meta || [];
-                setPhims(list);
-                if (list.length > 0) {
-                    const featured = list[0];
-                    if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
-                        setFeaturedMovie(featured);
-                    } else {
-                        setFeaturedMovie({ ...featured, Anh: DEFAULT_BANNER });
-                    }
-                }
-            } catch (err) {
-                console.error('Error fetching phims:', err);
-            }
-        };
-
-        fetchPhims();
+        // axiosClient.get('/auth/phims/search?keyword=') 
+        //     .then(res => {
+        //         const list = res.data.meta || [];
+        //         setPhims(list);
+        //         if (list.length > 0) {
+        //             // Đảm bảo URL ảnh của phim nổi bật hợp lệ
+        //             const featured = list[0];
+        //             if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
+        //                 setFeaturedMovie(featured);
+        //             } else {
+        //                 setFeaturedMovie({...featured, Anh: DEFAULT_BANNER}); // Gán ảnh mặc định nếu URL không hợp lệ
+        //             }
+        //         }
+        //     })
+        //     .catch(err => console.log(err));
+            axiosClient.get('/auth/dang-chieu')
+                    .then(res => {
+        const nowShowing = res.data.meta || res.data || [];
+        setNowShowingPhims(nowShowing);
+    })
+    .catch(err => console.log('Error fetching now showing movies:', err));
+     axiosClient.get('/auth/sorted-by-rating')
+        .then(res => {
+           const topMovies = res.data.data || [];
+            setTopTrendingPhims(topMovies);
+        })
+        .catch(err => console.log('Error fetching top trending movies:', err));
     }, []);
 
-    const handleSearch = () => {
-        navigate(`/search?keyword=${keyword}&genre=${genre}&year=${year}`);
-    };
-
+      const handleSearch = () => {
+    const params = {};
+    if (keyword.trim()) params.tenPhim = keyword.trim();
+    if (genre && genre !== '') params.theLoai = genre;
+    if (year && year !== '') params.nam = year;
+    
+    // ✅ Encode params đúng cách
+    const queryString = Object.keys(params)
+        .map(key => `${key}=${encodeURIComponent(params[key])}`)
+        .join('&');
+    
+    navigate(`/search?${queryString}`);
+};
+    
     // Lấy URL banner cuối cùng
     const bannerUrl = featuredMovie?.Anh || DEFAULT_BANNER;
     // Lấy khoảng 3 phim để hiển thị ở mục "Phim Đang Chiếu"
@@ -128,12 +149,18 @@ const HomePage = () => {
                         </button>
                     </div>
                     {/* Horizontal Scroll Container */}
-                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory items-start">
-                        {showingPhims.map(phim => (
+                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
+                         {nowShowingPhims.length > 0 ? ( 
+                            nowShowingPhims.map(phim => (
                             <div key={phim.MaPhim} className="snap-center">
-                                <MovieCard movie={phim} variant="large" />
-                            </div>
-                        ))}
+                                    <MovieCard movie={phim} />
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-400 text-center w-full py-8">
+                                    Đang tải phim đang chiếu...
+                                </p>
+                            )}
                     </div>
                 </div>
 
@@ -148,14 +175,18 @@ const HomePage = () => {
                             <option className="bg-gray-900">Tuần này</option>
                         </select>
                     </div>
-                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory items-start">
-                        {[
-                            ...[...phims].sort((a,b) => (b.DiemDanhGia || 0) - (a.DiemDanhGia || 0))
-                        ].map(phim => (
-                            <div key={`trend-${phim.MaPhim}`} className="snap-center">
-                                <MovieCard movie={phim} variant="small" />
-                            </div>
-                        ))}
+                    <div className="flex gap-6 overflow-x-auto pb-8 scrollbar-hide snap-x snap-mandatory">
+                       {topTrendingPhims.length > 0 ? (  // top trending_______________________
+                            topTrendingPhims.map(phim => (
+                                <div key={`trend-${phim.MaPhim}`} className="snap-center">
+                                    <MovieCard movie={phim} />
+                                </div>
+                            ))
+                        ) : (
+                            <p className="text-gray-400 text-center w-full py-8">
+                                Đang tải phim xu hướng...
+                            </p>
+                        )}
                     </div>
                 </div>
 

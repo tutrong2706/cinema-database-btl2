@@ -187,9 +187,9 @@ class authService {
             MaPhim: phim.MaPhim,
             TenPhim: phim.TenPhim,
             ThoiLuong: phim.ThoiLuong,
-            MoTa: phim.MoTaNoiDung, // Sửa: MoTaNoiDung theo schema
-            Anh: phim.Anh || "", // Schema không có cột Anh, bạn có thể cần thêm hoặc để trống
-            TheLoai: phim.the_loai_phim.map(t => t.TheLoai), // Sửa: t.TheLoai theo schema
+            MoTa: phim.MoTaNoiDung, 
+            Anh: phim.Anh || "", 
+            TheLoai: phim.the_loai_phim.map(t => t.TheLoai), 
             DanhGia: phim.danh_gia
         };
     }
@@ -245,37 +245,56 @@ class authService {
 
     // Thêm hàm này vào class authService
     async searchPhim(keyword = "") {
-        const search = (keyword || "").trim();
-
-        // Nếu có từ khóa: tìm theo tên kèm điểm trung bình
-        if (search) {
-            const phims = await prisma.$queryRaw`
-                SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
-                       p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
-                       p.DoTuoi, p.ChuDePhim, p.Anh,
-                       ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
-                FROM PHIM p
-                LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
-                WHERE p.TenPhim LIKE CONCAT('%', ${search}, '%')
-                GROUP BY p.MaPhim
-                ORDER BY p.NgayKhoiChieu DESC
-            `;
-            return phims;
-        }
-
-        // Nếu không có từ khóa: trả về toàn bộ phim kèm điểm trung bình
-        const phims = await prisma.$queryRaw`
-            SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
-                   p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
-                   p.DoTuoi, p.ChuDePhim, p.Anh,
-                   ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
-            FROM PHIM p
-            LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
-            GROUP BY p.MaPhim
-            ORDER BY p.NgayKhoiChieu DESC
-        `;
+        // Gọi SP_TimKiemPhim mà khách cũng dùng được
+        const phims = await prisma.$quyerRaw`CALL SP_TimKiemPhim(${keyword})`;
         return phims;
     }
+async getNowShowingPhims() {
+  const phims = await prisma.phim.findMany({
+    select: { MaPhim: true, TenPhim: true, Anh: true }
+  });
+  return phims;
+}
+
+async getPhimsSortedByRating() {
+    const phims = await prisma.phim.findMany({
+        select: {
+            MaPhim: true,
+            TenPhim: true,
+            Anh: true,
+            danh_gia: {
+                select: { DiemSo: true }
+            }
+        }
+    });
+
+    const sorted = phims
+        .map(p => {
+            const rating = p.danh_gia.length
+                ? p.danh_gia.reduce((sum, d) => sum + d.DiemSo, 0) / p.danh_gia.length
+                : 0;
+
+            return {
+                MaPhim: p.MaPhim,
+                TenPhim: p.TenPhim,
+                Anh: p.Anh,
+                Rating: Number(rating.toFixed(2))
+            };
+        })
+        .sort((a, b) => b.Rating - a.Rating);
+
+    return sorted;
+}
+async filterPhims({ tenPhim, theLoai, nam }) {
+    if (!tenPhim || tenPhim.trim() === "") tenPhim = null;
+    if (!theLoai || theLoai.trim() === "") theLoai = null;
+    if (!nam || nam === 0) nam = null;
+    const result = await prisma.$queryRaw`
+        CALL sp_LocPhimTheoNhieuDieuKien(${tenPhim}, ${theLoai}, ${nam});
+    `;
+     const data = Array.isArray(result[0]) ? result[0] : result;
+    return data;
+}
 }
 
 export default new authService();

@@ -101,3 +101,50 @@ BEGIN
 END$$
 
 DELIMITER ;
+DROP PROCEDURE IF EXISTS sp_LocPhimTheoNhieuDieuKien;
+
+DELIMITER //
+
+CREATE PROCEDURE sp_LocPhimTheoNhieuDieuKien (
+    IN p_TenPhim VARCHAR(200),
+    IN p_TheLoai VARCHAR(50),
+    IN p_Nam INT
+)
+BEGIN
+    -- Nếu thể loại là rỗng -> bỏ lọc
+    IF p_TheLoai = '' OR p_TheLoai IS NULL THEN
+        SET p_TheLoai = NULL;
+    END IF;
+
+    -- Nếu tên phim rỗng -> bỏ lọc
+    IF p_TenPhim = '' OR p_TenPhim IS NULL THEN
+        SET p_TenPhim = NULL;
+    END IF;
+
+    -- Nếu năm = 0 hoặc NULL -> bỏ lọc
+    IF p_Nam = 0 OR p_Nam IS NULL THEN
+        SET p_Nam = NULL;
+    END IF;
+
+    -- Query chính
+    SELECT 
+        P.MaPhim,
+        P.TenPhim,
+        P.Anh AS HinhAnh,       -- 🟢 LẤY URL ẢNH GỐC
+        P.NgayKhoiChieu,
+        TL.TheLoai
+    FROM 
+        PHIM P
+    JOIN 
+        THE_LOAI_PHIM TL ON P.MaPhim = TL.MaPhim
+    WHERE 
+        (p_TenPhim IS NULL OR P.TenPhim LIKE CONCAT('%', p_TenPhim, '%'))
+        AND (p_TheLoai IS NULL OR TL.TheLoai = p_TheLoai)
+        AND (p_Nam IS NULL OR YEAR(P.NgayKhoiChieu) = p_Nam)
+    ORDER BY 
+        P.NgayKhoiChieu DESC,
+        P.TenPhim ASC;
+END
+//
+
+DELIMITER ;

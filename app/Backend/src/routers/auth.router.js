@@ -12,6 +12,10 @@ authRouter.get('/raps/:MaRapPhim/phims', authController.getPhimsByRap);
 authRouter.get('/phims/:MaPhim', authController.getPhimDetail);
 authRouter.get('/suat-chieus', authController.getSuatChieus);
 authRouter.get('/phims/search', authController.searchPhim); // API tìm kiếm công khai
+authRouter.get('/dang-chieu', authController.getNowShowingPhims);
+authRouter.get( '/sorted-by-rating',authController.getPhimsSortedByRating);
+authRouter.get('/filter', authController.filterPhims);
+
 
 
 

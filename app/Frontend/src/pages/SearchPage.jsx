@@ -9,24 +9,30 @@ const SearchPage = () => {
     
     // State form
     const [formData, setFormData] = useState({
-        keyword: searchParams.get('keyword') || '',
-        genre: searchParams.get('genre') || '',
-        year: searchParams.get('year') || '',
-        minRating: 0,
-        sortBy: 'TenPhim'
-    });
+    tenPhim: searchParams.get('tenPhim') || '',
+    theLoai: searchParams.get('theLoai') || '',
+    nam: searchParams.get('nam') || '',
+    minRating: 0,
+    sortBy: 'TenPhim'
+});
 
-    const handleSearch = async () => {
-        try {
-            // Gọi API Backend (Backend sẽ gọi SP_TimKiemPhim)
-            // Giả sử API là /auth/phims/advanced-search
-            const res = await axiosClient.get('/auth/phims/search', { params: formData });
-            setResults(res.data.meta);
-        } catch (error) {
-            console.error(error);
-            setResults([]);
-        }
-    };
+const handleSearch = async () => {
+    try {
+        // Tạo object params chỉ với những field có giá trị
+        const params = {};
+        if (formData.tenPhim) params.tenPhim = formData.tenPhim;
+        if (formData.theLoai) params.theLoai = formData.theLoai;
+        if (formData.nam) params.nam = formData.nam;
+        if (formData.minRating > 0) params.minRating = formData.minRating;
+        
+        // Gọi API /auth/phims/filter
+        const res = await axiosClient.get('/auth/fillter', { params });
+        setResults(res.data.meta || res.data || []);
+    } catch (error) {
+        console.error(error);
+        setResults([]);
+    }
+};
 
     useEffect(() => {
         handleSearch();
@@ -45,8 +51,8 @@ const SearchPage = () => {
                             <input 
                                 type="text" 
                                 className="w-full bg-gray-700 text-white p-2 rounded border border-gray-600"
-                                value={formData.keyword}
-                                onChange={e => setFormData({...formData, keyword: e.target.value})}
+                                value={formData.tenPhim}
+                                onChange={e => setFormData({...formData, tenPhim: e.target.value})}
                             />
                         </div>
                         <div>
