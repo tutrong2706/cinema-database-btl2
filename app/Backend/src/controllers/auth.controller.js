@@ -487,34 +487,20 @@ async getNowShowingPhims(req, res, next) {
         next(error);
     }
 }
-/**
- * @swagger
- * /auth/sorted-by-rating:
- *   get:
- *     tags: [Auth]
- *     summary: Lấy danh sách phim được sắp xếp theo rating
- *     description: Sắp xếp phim theo điểm trung bình DiemSo (bảng danh_gia)
- *     responses:
- *       200:
- *         description: Thành công
- */
-async getPhimsSortedByRating(req, res, next) {
-    try {
-        const data = await authService.getPhimsSortedByRating();
-        res.status(200).json({
-            code: 200,
-            message: "Lấy danh sách phim theo rating thành công",
-            data
-        });
-    } catch (error) {
-        next(error);
+
+    // FIX: Thêm controller cho sorted-by-rating
+    async getPhimsSortedByRating(req, res, next) {
+        try {
+            const phims = await authService.getPhimsSortedByRating();
+            // Lưu ý: handleSuccessResponse trả về data trong trường 'meta'
+            const response = handleSuccessResponse(200, "Top phim rating cao", phims);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
     }
-}
 
-
-// controllers/authController.js
-
-/**
+    /**
  * @swagger
  * /auth/filter:
  *   get:

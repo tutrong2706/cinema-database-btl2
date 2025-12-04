@@ -19,48 +19,51 @@ const HomePage = () => {
 
 
     useEffect(() => {
-        // axiosClient.get('/auth/phims/search?keyword=') 
-        //     .then(res => {
-        //         const list = res.data.meta || [];
-        //         setPhims(list);
-        //         if (list.length > 0) {
-        //             // Đảm bảo URL ảnh của phim nổi bật hợp lệ
-        //             const featured = list[0];
-        //             if (featured.Anh && typeof featured.Anh === 'string' && featured.Anh.startsWith('http')) {
-        //                 setFeaturedMovie(featured);
-        //             } else {
-        //                 setFeaturedMovie({...featured, Anh: DEFAULT_BANNER}); // Gán ảnh mặc định nếu URL không hợp lệ
-        //             }
-        //         }
-        //     })
-        //     .catch(err => console.log(err));
-            axiosClient.get('/auth/dang-chieu')
-                    .then(res => {
-        const nowShowing = res.data.meta || res.data || [];
-        setNowShowingPhims(nowShowing);
-    })
-    .catch(err => console.log('Error fetching now showing movies:', err));
-     axiosClient.get('/auth/sorted-by-rating')
-        .then(res => {
-           const topMovies = res.data.data || [];
-            setTopTrendingPhims(topMovies);
-        })
-        .catch(err => console.log('Error fetching top trending movies:', err));
+        // 1. Lấy phim đang chiếu
+        axiosClient.get('/auth/dang-chieu')
+            .then(res => {
+                // Backend trả về data trong 'meta' (theo handleSuccessResponse)
+                const nowShowing = res.data.meta || res.data || [];
+                setNowShowingPhims(nowShowing);
+                
+                // FIX: Set phim nổi bật cho Banner (lấy phim đầu tiên)
+                if (nowShowing.length > 0) {
+                    setFeaturedMovie(nowShowing[0]);
+                }
+            })
+            .catch(err => console.log('Error fetching now showing movies:', err));
+
+        // 2. Lấy phim Trending (Rating cao)
+        axiosClient.get('/auth/sorted-by-rating')
+            .then(res => {
+                // FIX: Sửa res.data.data thành res.data.meta
+                const topMovies = res.data.meta || [];
+                setTopTrendingPhims(topMovies);
+            })
+            .catch(err => console.log('Error fetching top trending movies:', err));
     }, []);
 
-      const handleSearch = () => {
-    const params = {};
-    if (keyword.trim()) params.tenPhim = keyword.trim();
-    if (genre && genre !== '') params.theLoai = genre;
-    if (year && year !== '') params.nam = year;
-    
-    // ✅ Encode params đúng cách
-    const queryString = Object.keys(params)
-        .map(key => `${key}=${encodeURIComponent(params[key])}`)
-        .join('&');
-    
-    navigate(`/search?${queryString}`);
-};
+    const handleSearch = async () => {
+        try {
+            // Gọi API filter thay vì chuyển trang
+            const res = await axiosClient.get('/auth/filter', {
+                params: {
+                    TenPhim: keyword,
+                    TheLoai: genre,
+                    Nam: year
+                }
+            });
+            
+            // Cập nhật kết quả vào cả 2 danh sách
+            const results = res.data.data || [];
+            setNowShowingPhims(results);
+            
+            // Scroll xuống phần kết quả
+            window.scrollTo({ top: 800, behavior: 'smooth' });
+        } catch (error) {
+            console.error("Search error:", error);
+        }
+    };
     
     // Lấy URL banner cuối cùng
     const bannerUrl = featuredMovie?.Anh || DEFAULT_BANNER;

@@ -187,7 +187,14 @@ class authService {
             MaPhim: phim.MaPhim,
             TenPhim: phim.TenPhim,
             ThoiLuong: phim.ThoiLuong,
+            NgonNgu: phim.NgonNgu,
+            QuocGia: phim.QuocGia,
+            DaoDien: phim.DaoDien,
+            DienVienChinh: phim.DienVienChinh,
+            NgayKhoiChieu: phim.NgayKhoiChieu,
             MoTa: phim.MoTaNoiDung, 
+            DoTuoi: phim.DoTuoi,
+            ChuDePhim: phim.ChuDePhim,
             Anh: phim.Anh || "", 
             TheLoai: phim.the_loai_phim.map(t => t.TheLoai), 
             DanhGia: phim.danh_gia
@@ -245,56 +252,95 @@ class authService {
 
     // Thêm hàm này vào class authService
     async searchPhim(keyword = "") {
-        // Gọi SP_TimKiemPhim mà khách cũng dùng được
-        const phims = await prisma.$quyerRaw`CALL SP_TimKiemPhim(${keyword})`;
+        const search = keyword ? `%${keyword.trim()}%` : '%';
+        
+        // Tìm kiếm đa năng trên nhiều trường: Tên, Đạo diễn, Diễn viên, Quốc gia, Năm
+        const phims = await prisma.$queryRaw`
+            SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
+                   p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung,
+                   p.DoTuoi, p.ChuDePhim, p.Anh,
+                   COALESCE(AVG(d.DiemSo), 0) as DiemDanhGia
+            FROM PHIM p
+            LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
+            WHERE p.TenPhim LIKE ${search}
+               OR p.DaoDien LIKE ${search}
+               OR p.DienVienChinh LIKE ${search}
+               OR p.QuocGia LIKE ${search}
+               OR CAST(YEAR(p.NgayKhoiChieu) AS CHAR) LIKE ${search}
+            GROUP BY p.MaPhim
+            ORDER BY p.NgayKhoiChieu DESC
+        `;
         return phims;
     }
-async getNowShowingPhims() {
-  const phims = await prisma.phim.findMany({
-    select: { MaPhim: true, TenPhim: true, Anh: true }
-  });
-  return phims;
-}
-
-async getPhimsSortedByRating() {
-    const phims = await prisma.phim.findMany({
-        select: {
-            MaPhim: true,
-            TenPhim: true,
-            Anh: true,
-            danh_gia: {
-                select: { DiemSo: true }
+    async getNowShowingPhims() {
+        const phims = await prisma.phim.findMany({
+            select: {
+                MaPhim: true,
+                TenPhim: true,
+                Anh: true,
+                ThoiLuong: true,
+                NgayKhoiChieu: true,
+                danh_gia: {
+                    select: { DiemSo: true }
+                }
+            },
+            orderBy: {
+                NgayKhoiChieu: 'desc'
             }
-        }
-    });
+        });
 
-    const sorted = phims
-        .map(p => {
-            const rating = p.danh_gia.length
-                ? p.danh_gia.reduce((sum, d) => sum + d.DiemSo, 0) / p.danh_gia.length
-                : 0;
-
+        return phims.map(p => {
+            const total = p.danh_gia.reduce((sum, item) => sum + item.DiemSo, 0);
+            const avg = p.danh_gia.length ? (total / p.danh_gia.length).toFixed(1) : 0;
             return {
                 MaPhim: p.MaPhim,
                 TenPhim: p.TenPhim,
                 Anh: p.Anh,
-                Rating: Number(rating.toFixed(2))
+                ThoiLuong: p.ThoiLuong,
+                NgayKhoiChieu: p.NgayKhoiChieu,
+                DiemDanhGia: parseFloat(avg)
             };
-        })
-        .sort((a, b) => b.Rating - a.Rating);
+        });
+    }
 
-    return sorted;
-}
-async filterPhims({ tenPhim, theLoai, nam }) {
-    if (!tenPhim || tenPhim.trim() === "") tenPhim = null;
-    if (!theLoai || theLoai.trim() === "") theLoai = null;
-    if (!nam || nam === 0) nam = null;
-    const result = await prisma.$queryRaw`
-        CALL sp_LocPhimTheoNhieuDieuKien(${tenPhim}, ${theLoai}, ${nam});
-    `;
-     const data = Array.isArray(result[0]) ? result[0] : result;
-    return data;
-}
+    // FIX: Thêm hàm lấy phim theo rating cao nhất
+    async getPhimsSortedByRating() {
+        // Lấy top 10 phim có điểm đánh giá cao nhất
+        const result = await prisma.$queryRaw`
+            SELECT p.MaPhim, p.TenPhim, p.Anh, p.ThoiLuong, p.NgayKhoiChieu,
+                   COALESCE(AVG(d.DiemSo), 0) as DiemDanhGia
+            FROM PHIM p
+            LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
+            GROUP BY p.MaPhim
+            ORDER BY DiemDanhGia DESC
+            LIMIT 10
+        `;
+        return result;
+    }
+    async filterPhims({ tenPhim, theLoai, nam }) {
+        // Chuyển đổi tham số để phù hợp với SQL (null nếu không có giá trị)
+        const searchName = tenPhim ? `%${tenPhim}%` : null;
+        const searchGenre = theLoai || null;
+        const searchYear = nam || null;
+
+        // Query Raw thay thế SP
+        const result = await prisma.$queryRaw`
+            SELECT DISTINCT p.MaPhim, p.TenPhim, p.Anh, p.ThoiLuong, p.NgayKhoiChieu, 
+                   COALESCE(AVG(d.DiemSo), 0) as DiemDanhGia
+            FROM PHIM p
+            LEFT JOIN THE_LOAI_PHIM t ON p.MaPhim = t.MaPhim
+            LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
+            WHERE (${searchName} IS NULL OR p.TenPhim LIKE ${searchName})
+              AND (${searchGenre} IS NULL OR t.TheLoai = ${searchGenre})
+              AND (${searchYear} IS NULL OR YEAR(p.NgayKhoiChieu) = ${searchYear})
+            GROUP BY p.MaPhim
+            ORDER BY p.NgayKhoiChieu DESC
+        `;
+        
+        // Prisma trả về BigInt cho COUNT/AVG đôi khi, cần serialize nếu cần thiết, 
+        // nhưng ở đây AVG trả về Decimal/Float, nên ổn.
+        return result;
+    }
 }
 
 export default new authService();

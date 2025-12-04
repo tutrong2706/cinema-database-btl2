@@ -41,7 +41,9 @@ const AdminPage = () => {
             await axiosClient.delete(`/admin/phims/${id}`);
             alert("Xóa thành công!");
             fetchPhims();
-        } catch (error) { alert("Lỗi xóa: " + error.message); }
+        } catch (error) { 
+            alert("Lỗi: Không thể xóa Phim này. Phim vẫn còn suất chiếu chưa diễn ra hoặc đang chờ/mở."); 
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -74,11 +76,21 @@ const AdminPage = () => {
     };
 
     const openAdd = () => {
-        // ... (Giữ nguyên logic) ...
         setEditingPhim(null);
+        // Cài đặt giá trị mặc định cho form thêm mới
         setFormData({
-            MaPhim: '', TenPhim: '', ThoiLuong: 0, NgonNgu: '', QuocGia: '',
-            DaoDien: '', DienVienChinh: '', NgayKhoiChieu: '', MoTaNoiDung: '', DoTuoi: 13, ChuDePhim: '', Anh: ''
+            MaPhim: 'PH888', 
+            TenPhim: '3 heo con', 
+            ThoiLuong: 90, // Mặc định 90 phút
+            NgonNgu: 'Tiếng Việt', // Mặc định Tiếng Việt
+            QuocGia: 'Việt Nam', // Mặc định Việt Nam
+            DaoDien: 'Trọngbro', 
+            DienVienChinh: 'Thốngbro', 
+            NgayKhoiChieu: new Date().toISOString().split('T')[0], // Mặc định là ngày hôm nay
+            MoTaNoiDung: 'Phim hay', 
+            DoTuoi: 13, // Mặc định 13+
+            ChuDePhim: 'Hành động', // Mặc định thể loại
+            Anh: 'https://i.pinimg.com/564x/d3/d4/19/d3d419e944662ef50d5de9216a06b82c.jpg'
         });
         setIsModalOpen(true);
     };
@@ -103,7 +115,7 @@ const AdminPage = () => {
                 <div className="mb-6">
                     <input 
                         type="text" 
-                        placeholder="Tìm kiếm theo Mã, Tên, Đạo diễn..." 
+                        placeholder="Tìm kiếm theo tên phim...." 
                         className="w-full p-4 rounded-xl bg-[#1a1a1a] text-white border border-gray-700 focus:border-[#00E5FF] outline-none transition placeholder-gray-500"
                         value={keyword}
                         onChange={(e) => setKeyword(e.target.value)}

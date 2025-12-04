@@ -21,8 +21,19 @@ class AdminService {
             return phims;
         }
 
-        // Nếu có keyword -> gọi Stored Procedure tìm kiếm (giữ nguyên hành vi cũ)
-        const phims = await prisma.$queryRaw`CALL SP_TimKiemPhim(${search})`;
+        // Nếu có keyword -> query tay thay vì gọi SP
+        const searchPattern = `%${search}%`;
+        const phims = await prisma.$queryRaw`
+            SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
+                   p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
+                   p.DoTuoi, p.ChuDePhim, p.Anh,
+                   ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
+            FROM PHIM p
+            LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
+            WHERE p.TenPhim LIKE ${searchPattern}
+            GROUP BY p.MaPhim
+            ORDER BY p.NgayKhoiChieu DESC
+        `;
         return phims;
     }
 
@@ -36,7 +47,7 @@ class AdminService {
     async createPhim(data) {
         const {
             MaPhim, TenPhim, ThoiLuong, NgonNgu, QuocGia, 
-            DaoDien, DienVienChinh, NgayKhoiChieu, MoTaNoiDung, DoTuoi, ChuDePhim
+            DaoDien, DienVienChinh, NgayKhoiChieu, MoTaNoiDung, DoTuoi, ChuDePhim, Anh
         } = data;
 
         try {
@@ -47,6 +58,12 @@ class AdminService {
                     ${MoTaNoiDung}, ${DoTuoi}, ${ChuDePhim}
                 )
             `;
+
+            // Cập nhật ảnh riêng vì SP chưa hỗ trợ tham số Anh
+            if (Anh) {
+                await prisma.$executeRaw`UPDATE PHIM SET Anh = ${Anh} WHERE MaPhim = ${MaPhim}`;
+            }
+
             return { message: "Thêm phim thành công" };
         } catch (error) {
             // Lỗi từ SIGNAL SQLSTATE trong SP sẽ văng ra đây
@@ -58,7 +75,7 @@ class AdminService {
     async updatePhim(MaPhim, data) {
         const {
             TenPhim, ThoiLuong, NgonNgu, QuocGia, 
-            DaoDien, DienVienChinh, NgayKhoiChieu, MoTaNoiDung, DoTuoi, ChuDePhim
+            DaoDien, DienVienChinh, NgayKhoiChieu, MoTaNoiDung, DoTuoi, ChuDePhim, Anh
         } = data;
 
         try {
@@ -69,6 +86,12 @@ class AdminService {
                     ${MoTaNoiDung}, ${DoTuoi}, ${ChuDePhim}
                 )
             `;
+
+            // Cập nhật ảnh riêng vì SP chưa hỗ trợ tham số Anh
+            if (Anh) {
+                await prisma.$executeRaw`UPDATE PHIM SET Anh = ${Anh} WHERE MaPhim = ${MaPhim}`;
+            }
+
             return { message: "Cập nhật phim thành công" };
         } catch (error) {
             throw new BadRequestError(error.message.split('\n').pop());

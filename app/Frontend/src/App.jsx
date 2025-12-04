@@ -1,4 +1,3 @@
-// ...existing code...
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import HomePage from './pages/HomePage';
 import MovieDetail from './pages/MovieDetail';
@@ -7,7 +6,7 @@ import PaymentPage from './pages/PaymentPage';
 import LoginPage from './pages/LoginPage'; // Bạn tự tạo trang này nhé
 import Navbar from './components/Navbar'; // Bạn tự tạo Navbar đơn giản
 import AdminPage from './pages/AdminPage'; // <-- added import
-// ...existing code...
+import SearchPage from './pages/SearchPage'; // <-- added import
 
 function App() {
   return (
@@ -21,7 +20,7 @@ function App() {
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/booking/:id" element={<BookingPage />} />
             <Route path="/payment" element={<PaymentPage />} />
-            <Route path="/search" element={<SearchPage />} /> 
+            <Route path="/search" element={<SearchPage />} />
             <Route path="/admin" element={<AdminPage />} /> {/* <-- added route */}
           </Routes>
         </div>
@@ -31,4 +30,3 @@ function App() {
 }
 
 export default App;
-// ...existing code...

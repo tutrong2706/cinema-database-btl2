@@ -18,31 +18,34 @@ const BookingPage = () => {
     // 1. Load danh sách rạp để chọn
     useEffect(() => {
         axiosClient.get('/auth/raps').then(res => setRaps(res.data.meta));
+        handleFindSuatChieu(); // Tự động tìm suất chiếu khi vào trang
     }, []);
+
+    // Khi ngày chiếu thay đổi cũng tự tìm lại
+    useEffect(() => {
+        handleFindSuatChieu();
+    }, [ngayChieu]);
 
     // 2. Tìm suất chiếu khi chọn Rạp + Ngày
     const handleFindSuatChieu = () => {
-        if (!selectedRap || !ngayChieu) return alert("Vui lòng chọn Rạp và Ngày Chiếu!");
-        
         // Reset Suất và Ghế khi tìm kiếm suất mới
         setSelectedSuat(null);
         setSelectedSeats([]);
 
-        axiosClient.get('/auth/suat-chieus', {
-            params: { MaRapPhim: selectedRap, MaPhim, NgayChieu: ngayChieu }
-        })
+        const params = { MaPhim, NgayChieu: ngayChieu };
+        if (selectedRap) params.MaRapPhim = selectedRap;
+
+        axiosClient.get('/auth/suat-chieus', { params })
         .then(res => {
             if (res.data.meta && res.data.meta.length > 0) {
                 setSuatChieus(res.data.meta);
             } else {
                 setSuatChieus([]);
-                alert("Không tìm thấy suất chiếu nào phù hợp.");
             }
         })
         .catch(error => {
             console.error(error);
             setSuatChieus([]);
-            alert("Lỗi khi tìm suất chiếu.");
         });
     };
 
@@ -107,25 +110,38 @@ const BookingPage = () => {
                 </button>
             </div>
 
-            {/* Bước 2: Chọn Suất Chiếu */}
+            {/* Bước 2: Chọn Suất Chiếu (Hiển thị theo từng rạp) */}
             {suatChieus.length > 0 && (
-                <div className="mb-10 bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800">
-                    <h3 className="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2">Chọn Giờ Chiếu (Phòng):</h3>
-                    <div className="flex flex-wrap gap-4">
-                        {suatChieus.map(sc => (
-                            <button
-                                key={sc.MaSuatChieu}
-                                onClick={() => { setSelectedSuat(sc); setSelectedSeats([]); }}
-                                className={`px-5 py-2 rounded-lg font-semibold transition text-sm ${
-                                    selectedSuat?.MaSuatChieu === sc.MaSuatChieu 
-                                    ? 'bg-green-600 text-white shadow-md shadow-green-600/40 border-green-600' 
-                                    : 'bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300'
-                                }`}
-                            >
-                                {sc.GioBatDau.substring(0, 5)} - {sc.phong_chieu.Ten}
-                            </button>
-                        ))}
-                    </div>
+                <div className="mb-10 space-y-6">
+                    {Object.entries(
+                        suatChieus.reduce((acc, sc) => {
+                            const tenRap = sc.phong_chieu?.rap_chieu_phim?.Ten || "Rạp Khác";
+                            if (!acc[tenRap]) acc[tenRap] = [];
+                            acc[tenRap].push(sc);
+                            return acc;
+                        }, {})
+                    ).map(([tenRap, listSuat]) => (
+                        <div key={tenRap} className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800">
+                            <h3 className="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2 flex items-center gap-2">
+                                <span className="text-[#00E5FF]">🎬</span> {tenRap}
+                            </h3>
+                            <div className="flex flex-wrap gap-4">
+                                {listSuat.map(sc => (
+                                    <button
+                                        key={sc.MaSuatChieu}
+                                        onClick={() => { setSelectedSuat(sc); setSelectedSeats([]); }}
+                                        className={`px-5 py-2 rounded-lg font-semibold transition text-sm ${
+                                            selectedSuat?.MaSuatChieu === sc.MaSuatChieu 
+                                            ? 'bg-green-600 text-white shadow-md shadow-green-600/40 border-green-600' 
+                                            : 'bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300'
+                                        }`}
+                                    >
+                                        {sc.GioBatDau.substring(0, 5)} - {sc.phong_chieu.Ten}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ))}
                 </div>
             )}
 
