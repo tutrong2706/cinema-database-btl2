@@ -64,8 +64,6 @@ const HomePage = () => {
     
     // Lấy URL banner cuối cùng
     const bannerUrl = featuredMovie?.Anh || DEFAULT_BANNER;
-    // Lấy khoảng 3 phim để hiển thị ở mục "Phim Đang Chiếu"
-    const showingPhims = phims.slice(0, 3);
 
     return (
         <div className="min-h-screen bg-gray-950 pb-20">

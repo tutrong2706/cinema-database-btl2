@@ -7,6 +7,7 @@ import PaymentPage from './pages/PaymentPage';
 import LoginPage from './pages/LoginPage'; // Bạn tự tạo trang này nhé
 import Navbar from './components/Navbar'; // Bạn tự tạo Navbar đơn giản
 import AdminPage from './pages/AdminPage'; // <-- added import
+import SearchPage from './pages/SearchPage';
 // ...existing code...
 
 function App() {
