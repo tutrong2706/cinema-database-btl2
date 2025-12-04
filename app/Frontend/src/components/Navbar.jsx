@@ -15,9 +15,18 @@ const Navbar = () => {
     return (
         <nav className="fixed top-0 w-full z-50 bg-[#141414]/90 backdrop-blur-md border-b border-white/5 transition-all duration-300">
             <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-                {/* 1. LOGO */}
-                <Link to="/" className="text-2xl font-extrabold tracking-wider text-[#00E5FF] hover:text-white transition duration-300">
-                    HappyCinema
+                
+                {/* 1. LOGO: Đã thay thế text bằng thẻ <img> */}
+                <Link to="/" className="flex items-center gap-2">
+                    <img 
+                      src="/happycinema.png" // Đường dẫn tới file logo trong thư mục Public
+                      alt="HappyCinema Logo" 
+                      className="h-10 w-auto" // Điều chỉnh kích thước logo (ví dụ: cao 10 đơn vị)
+                    />
+                    {/* Giữ lại tên nếu muốn hiển thị cả logo và tên */}
+                    <span className="text-2xl font-extrabold tracking-wider text-[#00E5FF] hover:text-white transition duration-300">
+                        HappyCinema
+                    </span>
                 </Link>
                 
                 {/* 2. MENU */}
