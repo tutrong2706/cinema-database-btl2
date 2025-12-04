@@ -6,7 +6,8 @@ class AdminController {
     async getPhims(req, res, next) {
         try {
             const { keyword } = req.query;
-            const result = await adminService.getListPhim(keyword);
+            // service method is `getPhims` (calls stored procedure)
+            const result = await adminService.getPhims(keyword);
             res.status(200).json(handleSuccessResponse(200, "Lấy danh sách thành công", result));
         } catch (error) {
             next(error);
