@@ -17,5 +17,7 @@ authRouter.get('/dang-chieu', authController.getNowShowingPhims);
 authRouter.get('/sorted-by-rating',authController.getPhimsSortedByRating);
 authRouter.get('/filter', authController.filterPhims);
 authRouter.get('/profile', authMiddleware, authController.getUserProfile);
+authRouter.get('/combos', authController.getCombos);
+authRouter.post('/booking', authMiddleware, authController.booking);
 
 export default authRouter;

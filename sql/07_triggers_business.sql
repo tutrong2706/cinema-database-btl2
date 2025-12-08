@@ -176,11 +176,30 @@ CREATE TRIGGER TRG_TT_CongDiemThuong_Insert
 AFTER INSERT ON THANH_TOAN
 FOR EACH ROW
 BEGIN
+    DECLARE v_MaKH VARCHAR(20);
+    DECLARE v_MoiHang VARCHAR(20);
+
     IF NEW.TrangThai = 'Đã thanh toán' THEN
-        UPDATE KHACH_HANG KH
-        JOIN DON_HANG DH ON DH.MaNguoiDung_KH = KH.MaNguoiDung
-        SET KH.DiemTichLuy = KH.DiemTichLuy + FLOOR(NEW.SoTien / 10000)
-        WHERE DH.MaDonHang = NEW.MaDonHang;
+        -- Lấy MaKH từ đơn hàng
+        SELECT MaNguoiDung_KH INTO v_MaKH
+        FROM DON_HANG
+        WHERE MaDonHang = NEW.MaDonHang;
+
+        -- Cập nhật trạng thái đơn hàng thành 'Đã thanh toán' (nếu chưa)
+        UPDATE DON_HANG 
+        SET TrangThai = 'Đã thanh toán' 
+        WHERE MaDonHang = NEW.MaDonHang AND TrangThai <> 'Đã thanh toán';
+
+        -- Cộng điểm tích lũy
+        UPDATE KHACH_HANG
+        SET DiemTichLuy = DiemTichLuy + FLOOR(NEW.SoTien / 10000)
+        WHERE MaNguoiDung = v_MaKH;
+
+        -- Cập nhật hạng thành viên dựa trên tổng chi tiêu
+        SET v_MoiHang = FUNC_XepHangThanhVien(v_MaKH);
+        UPDATE KHACH_HANG
+        SET LoaiThanhVien = v_MoiHang
+        WHERE MaNguoiDung = v_MaKH;
     END IF;
 END$$
 
@@ -189,11 +208,30 @@ CREATE TRIGGER TRG_TT_CongDiemThuong_Update
 AFTER UPDATE ON THANH_TOAN
 FOR EACH ROW
 BEGIN
+    DECLARE v_MaKH VARCHAR(20);
+    DECLARE v_MoiHang VARCHAR(20);
+
     IF NEW.TrangThai = 'Đã thanh toán' AND OLD.TrangThai <> 'Đã thanh toán' THEN
-        UPDATE KHACH_HANG KH
-        JOIN DON_HANG DH ON DH.MaNguoiDung_KH = KH.MaNguoiDung
-        SET KH.DiemTichLuy = KH.DiemTichLuy + FLOOR(NEW.SoTien / 10000)
-        WHERE DH.MaDonHang = NEW.MaDonHang;
+        -- Lấy MaKH từ đơn hàng
+        SELECT MaNguoiDung_KH INTO v_MaKH
+        FROM DON_HANG
+        WHERE MaDonHang = NEW.MaDonHang;
+
+        -- Cập nhật trạng thái đơn hàng thành 'Đã thanh toán' (nếu chưa)
+        UPDATE DON_HANG 
+        SET TrangThai = 'Đã thanh toán' 
+        WHERE MaDonHang = NEW.MaDonHang AND TrangThai <> 'Đã thanh toán';
+
+        -- Cộng điểm tích lũy
+        UPDATE KHACH_HANG
+        SET DiemTichLuy = DiemTichLuy + FLOOR(NEW.SoTien / 10000)
+        WHERE MaNguoiDung = v_MaKH;
+
+        -- Cập nhật hạng thành viên dựa trên tổng chi tiêu
+        SET v_MoiHang = FUNC_XepHangThanhVien(v_MaKH);
+        UPDATE KHACH_HANG
+        SET LoaiThanhVien = v_MoiHang
+        WHERE MaNguoiDung = v_MaKH;
     END IF;
 END$$
 

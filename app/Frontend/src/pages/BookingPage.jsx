@@ -14,10 +14,13 @@ const BookingPage = () => {
     const [suatChieus, setSuatChieus] = useState([]);
     const [selectedSuat, setSelectedSuat] = useState(null);
     const [selectedSeats, setSelectedSeats] = useState([]);
+    const [combos, setCombos] = useState([]);
+    const [selectedCombos, setSelectedCombos] = useState({}); // { MaHang: quantity }
 
     // 1. Load danh sách rạp để chọn
     useEffect(() => {
         axiosClient.get('/auth/raps').then(res => setRaps(res.data.meta));
+        axiosClient.get('/auth/combos').then(res => setCombos(res.data.meta || []));
         handleFindSuatChieu(); // Tự động tìm suất chiếu khi vào trang
     }, []);
 
@@ -66,6 +69,27 @@ const BookingPage = () => {
         }
     };
 
+    const handleComboChange = (maHang, delta) => {
+        setSelectedCombos(prev => {
+            const currentQty = prev[maHang] || 0;
+            const newQty = Math.max(0, currentQty + delta);
+            if (newQty === 0) {
+                const { [maHang]: _, ...rest } = prev;
+                return rest;
+            }
+            return { ...prev, [maHang]: newQty };
+        });
+    };
+
+    const calculateTotal = () => {
+        const ticketTotal = selectedSeats.length * (selectedSuat?.GiaVeCoBan || 0);
+        const comboTotal = Object.entries(selectedCombos).reduce((sum, [maHang, qty]) => {
+            const combo = combos.find(c => c.MaHang === maHang);
+            return sum + (combo ? Number(combo.DonGia) * qty : 0);
+        }, 0);
+        return ticketTotal + comboTotal;
+    };
+
     // 4. Chuyển sang trang thanh toán
     const handleConfirm = () => {
         if (!selectedSuat) return alert("Vui lòng chọn suất chiếu!");
@@ -75,7 +99,11 @@ const BookingPage = () => {
         const bookingData = {
             suatChieu: selectedSuat,
             seats: selectedSeats.sort((a, b) => a.HangGhe.localeCompare(b.HangGhe) || a.SoGhe - b.SoGhe),
-            totalPrice: selectedSeats.length * selectedSuat.GiaVeCoBan
+            combos: Object.entries(selectedCombos).map(([maHang, qty]) => ({
+                ...combos.find(c => c.MaHang === maHang),
+                SoLuong: qty
+            })),
+            totalPrice: calculateTotal()
         };
         localStorage.setItem('bookingTemp', JSON.stringify(bookingData));
         navigate('/payment');
@@ -194,12 +222,39 @@ const BookingPage = () => {
                         <div className="flex items-center gap-2"><span className="w-4 h-4 rounded-sm bg-gray-600"></span> Đã bán</div>
                     </div>
 
+                    {/* Bước 4: Chọn Combo */}
+                    <div className="mt-8 border-t border-gray-700 pt-6">
+                        <h3 className="text-xl font-bold mb-4 text-white text-left">🍿 Chọn Combo Bắp Nước</h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {combos.map(combo => (
+                                <div key={combo.MaHang} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700">
+                                    <div className="text-left">
+                                        <p className="font-bold text-white">{combo.TenHang}</p>
+                                        <p className="text-sm text-gray-400">{combo.MoTa}</p>
+                                        <p className="text-[#00E5FF] font-bold mt-1">{Number(combo.DonGia).toLocaleString()} VNĐ</p>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button 
+                                            onClick={() => handleComboChange(combo.MaHang, -1)}
+                                            className="w-8 h-8 rounded-full bg-gray-700 text-white hover:bg-gray-600 flex items-center justify-center font-bold"
+                                        >-</button>
+                                        <span className="text-white font-bold w-6 text-center">{selectedCombos[combo.MaHang] || 0}</span>
+                                        <button 
+                                            onClick={() => handleComboChange(combo.MaHang, 1)}
+                                            className="w-8 h-8 rounded-full bg-[#00E5FF] text-black hover:bg-[#00cce6] flex items-center justify-center font-bold"
+                                        >+</button>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
                     {/* Tóm tắt & Thanh toán */}
                     <div className="mt-10 border-t border-gray-700 pt-6 flex flex-col sm:flex-row justify-between items-center">
                         <div className="text-left mb-4 sm:mb-0">
                             <p className="text-gray-300 text-sm">Ghế chọn: <span className="font-bold text-white">{selectedSeats.map(s => `${s.HangGhe}${s.SoGhe}`).join(', ') || "Chưa chọn"}</span></p>
                             <p className="text-xl font-extrabold text-[#00E5FF] mt-1">
-                                Tổng tiền: <span className="text-yellow-400">{(selectedSeats.length * selectedSuat.GiaVeCoBan).toLocaleString()} VNĐ</span>
+                                Tổng tiền: <span className="text-yellow-400">{calculateTotal().toLocaleString()} VNĐ</span>
                             </p>
                             <p className="text-xs text-gray-500 mt-1">Giá vé cơ bản: {selectedSuat.GiaVeCoBan.toLocaleString()} VNĐ/ghế</p>
                         </div>

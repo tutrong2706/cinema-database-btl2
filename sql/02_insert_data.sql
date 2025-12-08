@@ -32,26 +32,26 @@ INSERT INTO TAI_KHOAN (MaNguoiDung, HoTen, DiaChi, SDT, GioiTinh, Email, MatKhau
 ('AD003', 'Admin Kế Toán', 'Q3, TP.HCM', '0913333333', 'F', 'admin3@example.com', 'admin3');
 
 INSERT INTO KHACH_HANG (MaNguoiDung, LoaiThanhVien, DiemTichLuy) VALUES
-('KH001', 'Bronze',   10),
-('KH002', 'Silver',   50),
-('KH003', 'Gold',     120),
-('KH004', 'Bronze',    5),
-('KH005', 'Platinum',300),
-('KH006', 'Silver',   60),
+('KH001', 'Bronze',   32),
+('KH002', 'Silver',   210),
+('KH003', 'Gold',     682),
+('KH004', 'Bronze',    0),
+('KH005', 'Platinum',1213),
+('KH006', 'Silver',   225),
 ('KH007', 'Bronze',   20),
-('KH008', 'Gold',     150),
-('KH009', 'Bronze',    0),
-('KH010', 'Platinum',450),
-('KH011', 'Bronze',   10),
-('KH012', 'Silver',   50),
-('KH013', 'Gold',     120),
-('KH014', 'Bronze',    5),
-('KH015', 'Platinum',300),
-('KH016', 'Silver',   60),
-('KH017', 'Bronze',   20),
-('KH018', 'Gold',     150),
+('KH008', 'Gold',     510),
+('KH009', 'Bronze',   38),
+('KH010', 'Platinum',1060),
+('KH011', 'Bronze',   0),
+('KH012', 'Silver',   210),
+('KH013', 'Gold',     510),
+('KH014', 'Bronze',    0),
+('KH015', 'Platinum',1010),
+('KH016', 'Silver',   210),
+('KH017', 'Bronze',   0),
+('KH018', 'Gold',     510),
 ('KH019', 'Bronze',    0),
-('KH020', 'Platinum',450);
+('KH020', 'Platinum',1010);
 
 INSERT INTO QUAN_TRI_VIEN (MaNguoiDung, NgayBatDauLam, Luong, ChucVu) VALUES
 ('AD001', '2024-01-01', 20000000, 'Quản lý rạp'),
@@ -92,7 +92,8 @@ INSERT INTO GHE (MaPhong, HangGhe, SoGhe, LoaiGhe) VALUES
 ('P004', 'A', 1, 'Thường'), 
 ('P005', 'A', 1, 'Thường'),
 ('P006', 'D', 1, 'Giường nằm'), 
-('P006', 'D', 2, 'Giường nằm'); -- Thêm ghế này cho vé hủy
+('P006', 'D', 2, 'Giường nằm'),
+('P001', 'E', 1, 'Thường'), ('P001', 'E', 2, 'Thường'); -- Thêm ghế cho vé lịch sử
 
 /* ==========================================================================
    3. PHIM – THỂ LOẠI – KHUYẾN MÃI
@@ -109,8 +110,8 @@ INSERT INTO PHIM (MaPhim, TenPhim, ThoiLuong, NgonNgu, QuocGia, DaoDien, DienVie
  N'Minami Takayama',    '2023-04-14', N'Thám tử lừng danh', 13, N'Hoạt hình'),
 ('PH005', N'Spider-Man: No Way Home', 150, N'English', N'USA', N'Jon Watts',
  N'Tom Holland',        '2021-12-17', N'Anh hùng Marvel', 13, N'Siêu anh hùng'),
-('PH006', 'Dune: Messiah',         160, 'English', 'USA', 'Denis Villeneuve', 'Chalamet', '2025-12-15', 'Khoa học viễn tưởng', 16, 'Viễn tưởng'),
-('PH007', 'Lật Mặt 7',             115, 'Tiếng Việt', 'Việt Nam', 'Lý Hải', 'Lý Hải', '2025-12-25', 'Hành động hài', 16, 'Hành động'),
+('PH006', 'Dune: Messiah',         160, 'English', 'USA', 'Denis Villeneuve', 'Chalamet', '2025-11-15', 'Khoa học viễn tưởng', 16, 'Viễn tưởng'),
+('PH007', 'Lật Mặt 7',             115, 'Tiếng Việt', 'Việt Nam', 'Lý Hải', 'Lý Hải', '2025-11-25', 'Hành động hài', 16, 'Hành động'),
 ('PH008', 'The Conjuring 3',       100, 'English', 'USA', 'Michael Chaves', 'Patrick Wilson', '2025-10-31', 'Ma ám kinh dị', 18, 'Kinh dị');
 
 INSERT INTO THE_LOAI_PHIM (MaPhim, TheLoai) VALUES
@@ -136,24 +137,26 @@ INSERT INTO MAT_HANG (MaHang, TenHang, DonGia, SoLuongTon, MoTa, LoaiHang) VALUE
 ('MH005', 'Áo thun Avengers',   200000,  30, 'Áo thun', 'QUA_LUU_NIEM'),
 ('MH006', 'Bắp Phô Mai',         55000,  80, 'Vị phô mai', 'DO_AN'),
 ('MH007', 'Hotdog',              40000,  60, 'Xúc xích nóng', 'DO_AN'),
-('MH008', 'Ly giữ nhiệt Conan', 150000,  40, 'Ly limited', 'QUA_LUU_NIEM');
+('MH008', 'Ly giữ nhiệt Conan', 150000,  40, 'Ly limited', 'QUA_LUU_NIEM'),
+('MH_VIP_1', 'Mô hình Iron Man', 5000000, 10, 'Life-size 1:1', 'QUA_LUU_NIEM'),
+('MH_VIP_2', 'Bộ sưu tập Marvel', 2000000, 20, 'Full set', 'QUA_LUU_NIEM');
 
 /* ==========================================================================
    5. ĐƠN HÀNG - GỒM - THANH TOÁN
    ========================================================================== */
 INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
-('DH001', 'KH001', 'Online',   '2025-12-20 10:00', 105000, 'Đã thanh toán'),
-('DH002', 'KH002', 'Tại quầy', '2025-12-20 10:15',  70000, 'Chờ thanh toán'),
-('DH003', 'KH003', 'Online',   '2025-12-20 11:00',  60000, 'Đã thanh toán'),
-('DH004', 'KH004', 'Tại quầy', '2025-12-20 12:30',  80000, 'Hủy'),
-('DH005', 'KH005', 'Online',   '2025-12-24 09:00', 400000, 'Đã thanh toán'),
-('DH006', 'KH006', 'Online',   '2025-12-24 10:00', 150000, 'Đã thanh toán'),
-('DH007', 'KH007', 'App',      '2025-12-24 14:00', 200000, 'Đã thanh toán'),
-('DH008', 'KH008', 'Tại quầy', '2025-12-25 18:00',  55000, 'Chờ thanh toán'),
-('DH009', 'KH009', 'Online',   '2025-12-25 19:00', 300000, 'Đã thanh toán'),
-('DH010', 'KH010', 'Online',   '2025-12-31 20:00', 500000, 'Đã thanh toán'),
-('DH011', 'KH001', 'App', '2026-01-01 08:00', 75000, 'Đã thanh toán'),
-('DH012', 'KH002', 'Web', '2026-01-01 14:00', 90000, 'Hủy');
+('DH001', 'KH001', 'Online',   '2025-12-20 10:00', 165000, 'Đã thanh toán'),
+('DH002', 'KH002', 'Tại quầy', '2025-12-20 10:15',  160000, 'Chờ thanh toán'),
+('DH003', 'KH003', 'Online',   '2025-12-20 11:00',  100000, 'Đã thanh toán'),
+('DH004', 'KH004', 'Tại quầy', '2025-12-20 12:30',  95000, 'Hủy'),
+('DH005', 'KH005', 'Online',   '2025-12-24 09:00', 500000, 'Đã thanh toán'),
+('DH006', 'KH006', 'Online',   '2025-12-24 10:00', 175000, 'Đã thanh toán'),
+('DH007', 'KH007', 'App',      '2025-12-24 14:00', 280000, 'Đã thanh toán'),
+('DH008', 'KH008', 'Tại quầy', '2025-12-25 18:00',  145000, 'Chờ thanh toán'),
+('DH009', 'KH009', 'Online',   '2025-12-25 19:00', 380000, 'Đã thanh toán'),
+('DH010', 'KH010', 'Online',   '2025-12-31 20:00', 785000, 'Đã thanh toán'),
+('DH011', 'KH001', 'App', '2026-01-01 08:00', 155000, 'Đã thanh toán'),
+('DH012', 'KH002', 'Web', '2026-01-01 14:00', 200000, 'Hủy');
 
 INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES
 ('DH001','MH001',1,45000), ('DH001','MH002',2,30000),
@@ -170,18 +173,18 @@ INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES
 
 -- THANH TOÁN
 INSERT INTO THANH_TOAN (MaThanhToan, MaDonHang, NgayThanhToan, PhuongThuc, TrangThai, SoTien) VALUES
-('TT001', 'DH001', '2025-12-20 10:05', 'Thẻ',        'Đã thanh toán', 105000),
-('TT002', 'DH002', '2025-12-20 10:20', 'Tiền mặt',   'Đang xử lý',     70000),
-('TT003', 'DH003', '2025-12-20 11:05', 'Ví điện tử', 'Đã thanh toán',  60000),
-('TT004', 'DH004', '2025-12-20 12:40', 'Tiền mặt',   'Thất bại',       80000),
-('TT005', 'DH005', '2025-12-24 09:05', 'Thẻ',        'Đã thanh toán', 400000),
-('TT006', 'DH006', '2025-12-24 10:05', 'Momo',       'Đã thanh toán', 150000),
-('TT007', 'DH007', '2025-12-24 14:05', 'ZaloPay',    'Đã thanh toán', 200000),
-('TT008', 'DH008', '2025-12-25 18:10', 'Tiền mặt',   'Đang xử lý',     55000),
-('TT009', 'DH009', '2025-12-25 19:10', 'Thẻ',        'Đã thanh toán', 300000),
-('TT010', 'DH010', '2025-12-31 20:05', 'Visa',       'Đã thanh toán', 500000),
-('TT011', 'DH011', '2026-01-01 08:05', 'Momo', 'Đã thanh toán', 75000),
-('TT012', 'DH012', '2026-01-01 14:05', 'Visa', 'Thất bại', 90000);
+('TT001', 'DH001', '2025-12-20 10:05', 'Thẻ',        'Đã thanh toán', 165000),
+('TT002', 'DH002', '2025-12-20 10:20', 'Tiền mặt',   'Đang xử lý',     160000),
+('TT003', 'DH003', '2025-12-20 11:05', 'Ví điện tử', 'Đã thanh toán',  100000),
+('TT004', 'DH004', '2025-12-20 12:40', 'Tiền mặt',   'Thất bại',       95000),
+('TT005', 'DH005', '2025-12-24 09:05', 'Thẻ',        'Đã thanh toán', 500000),
+('TT006', 'DH006', '2025-12-24 10:05', 'Momo',       'Đã thanh toán', 175000),
+('TT007', 'DH007', '2025-12-24 14:05', 'ZaloPay',    'Đã thanh toán', 280000),
+('TT008', 'DH008', '2025-12-25 18:10', 'Tiền mặt',   'Đang xử lý',     145000),
+('TT009', 'DH009', '2025-12-25 19:10', 'Thẻ',        'Đã thanh toán', 380000),
+('TT010', 'DH010', '2025-12-31 20:05', 'Visa',       'Đã thanh toán', 785000),
+('TT011', 'DH011', '2026-01-01 08:05', 'Momo', 'Đã thanh toán', 155000),
+('TT012', 'DH012', '2026-01-01 14:05', 'Visa', 'Thất bại', 200000);
 
 /* ==========================================================================
    6. TRÌNH CHIẾU – SUẤT CHIẾU
@@ -294,28 +297,28 @@ INSERT INTO DANH_GIA (MaDanhGia, MaNguoiDung, MaPhim, NoiDung, NgayDang, DiemSo)
 ('DG024', 'KH004', 'PH004', N'Vụ án lần này hơi dễ đoán hung thủ.', '2024-11-26 14:00:00', 7),
 ('DG025', 'KH005', 'PH005', N'Must watch! Phim siêu anh hùng hay nhất năm.', '2024-11-26 16:00:00', 10),
 -- === 2. PH006: DUNE: MESSIAH (10 Đánh giá) ===
-('DG036', 'KH001', 'PH006', N'Hình ảnh tuyệt đẹp, âm thanh choáng ngợp.', '2025-12-16 10:00:00', 10),
-('DG037', 'KH002', 'PH006', N'Kiệt tác điện ảnh viễn tưởng.', '2025-12-16 11:30:00', 10),
-('DG038', 'KH003', 'PH006', N'Phim hơi chậm, cần kiên nhẫn.', '2025-12-17 09:00:00', 7),
-('DG039', 'KH004', 'PH006', N'Timothée Chalamet diễn xuất đỉnh cao.', '2025-12-17 14:00:00', 9),
-('DG040', 'KH005', 'PH006', N'Zendaya rất có hồn trong vai Chani.', '2025-12-18 16:00:00', 9),
-('DG041', 'KH006', 'PH006', N'Sức mạnh của Paul được thể hiện rất thuyết phục.', '2025-12-18 18:45:00', 10),
-('DG042', 'KH007', 'PH006', N'Nên đọc sách trước khi xem.', '2025-12-19 20:00:00', 8),
-('DG043', 'KH008', 'PH006', N'Rất thích cảnh cưỡi giun cát.', '2025-12-19 21:30:00', 10),
-('DG044', 'KH009', 'PH006', N'Nội dung phức tạp nhưng rất cuốn hút.', '2025-12-20 08:30:00', 9),
-('DG045', 'KH010', 'PH006', N'Phim xứng đáng xem IMAX.', '2025-12-20 12:00:00', 10),
+('DG036', 'KH001', 'PH006', N'Hình ảnh tuyệt đẹp, âm thanh choáng ngợp.', '2025-11-16 10:00:00', 10),
+('DG037', 'KH002', 'PH006', N'Kiệt tác điện ảnh viễn tưởng.', '2025-11-16 11:30:00', 10),
+('DG038', 'KH003', 'PH006', N'Phim hơi chậm, cần kiên nhẫn.', '2025-11-17 09:00:00', 7),
+('DG039', 'KH004', 'PH006', N'Timothée Chalamet diễn xuất đỉnh cao.', '2025-11-17 14:00:00', 9),
+('DG040', 'KH005', 'PH006', N'Zendaya rất có hồn trong vai Chani.', '2025-11-18 16:00:00', 9),
+('DG041', 'KH006', 'PH006', N'Sức mạnh của Paul được thể hiện rất thuyết phục.', '2025-11-18 18:45:00', 10),
+('DG042', 'KH007', 'PH006', N'Nên đọc sách trước khi xem.', '2025-11-19 20:00:00', 8),
+('DG043', 'KH008', 'PH006', N'Rất thích cảnh cưỡi giun cát.', '2025-11-19 21:30:00', 10),
+('DG044', 'KH009', 'PH006', N'Nội dung phức tạp nhưng rất cuốn hút.', '2025-11-20 08:30:00', 9),
+('DG045', 'KH010', 'PH006', N'Phim xứng đáng xem IMAX.', '2025-11-20 12:00:00', 10),
 
 -- === 3. PH007: LẬT MẶT 7 (10 Đánh giá) ===
-('DG046', 'KH011', 'PH007', N'Hài hước và nhân văn, Lý Hải làm phim ngày càng ổn.', '2025-12-26 10:00:00', 9),
-('DG047', 'KH012', 'PH007', N'Phim giải trí tốt, cười từ đầu đến cuối.', '2025-12-26 11:30:00', 8),
-('DG048', 'KH013', 'PH007', N'Hành động chưa được như kỳ vọng.', '2025-12-27 09:00:00', 6),
-('DG049', 'KH014', 'PH007', N'Thông điệp về gia đình rất ý nghĩa.', '2025-12-27 14:00:00', 10),
-('DG050', 'KH015', 'PH007', N'Phim Tết xem rất hợp.', '2025-12-28 16:00:00', 9),
-('DG051', 'KH016', 'PH007', N'Cốt truyện đơn giản nhưng cảm động.', '2025-12-28 18:45:00', 8),
-('DG052', 'KH017', 'PH007', N'Thích Mạc Văn Khoa.', '2025-12-29 20:00:00', 9),
-('DG053', 'KH018', 'PH007', N'Phim Việt đáng tiền nhất năm.', '2025-12-29 21:30:00', 10),
-('DG054', 'KH019', 'PH007', N'Lật Mặt chưa bao giờ làm mình thất vọng.', '2025-12-30 08:30:00', 9),
-('DG055', 'KH020', 'PH007', N'Cảnh quay ở quê đẹp quá.', '2025-12-30 12:00:00', 9),
+('DG046', 'KH011', 'PH007', N'Hài hước và nhân văn, Lý Hải làm phim ngày càng ổn.', '2025-11-26 10:00:00', 9),
+('DG047', 'KH012', 'PH007', N'Phim giải trí tốt, cười từ đầu đến cuối.', '2025-11-26 11:30:00', 8),
+('DG048', 'KH013', 'PH007', N'Hành động chưa được như kỳ vọng.', '2025-11-27 09:00:00', 6),
+('DG049', 'KH014', 'PH007', N'Thông điệp về gia đình rất ý nghĩa.', '2025-11-27 14:00:00', 10),
+('DG050', 'KH015', 'PH007', N'Phim Tết xem rất hợp.', '2025-11-28 16:00:00', 9),
+('DG051', 'KH016', 'PH007', N'Cốt truyện đơn giản nhưng cảm động.', '2025-11-28 18:45:00', 8),
+('DG052', 'KH017', 'PH007', N'Thích Mạc Văn Khoa.', '2025-11-29 20:00:00', 9),
+('DG053', 'KH018', 'PH007', N'Phim Việt đáng tiền nhất năm.', '2025-11-29 21:30:00', 10),
+('DG054', 'KH019', 'PH007', N'Lật Mặt chưa bao giờ làm mình thất vọng.', '2025-11-30 08:30:00', 9),
+('DG055', 'KH020', 'PH007', N'Cảnh quay ở quê đẹp quá.', '2025-11-30 12:00:00', 9),
 
 -- === 4. PH008: THE CONJURING 3 (10 Đánh giá) ===
 ('DG056', 'KH001', 'PH008', N'Phim kinh dị đỉnh cao, jump scare liên tục.', '2025-12-07 15:00:00', 9),
@@ -335,4 +338,174 @@ INSERT INTO QUAN_LY (MaNguoiDung_QTV, MaRapPhim) VALUES
 ('AD002','RAP003'), ('AD002','RAP004'),
 ('AD003','RAP005');
 
--- SET FOREIGN_KEY_CHECKS = 1; -- Bật lại kiểm tra khóa ngoại
+/* ==========================================================================
+   9. DỮ LIỆU LỊCH SỬ (ĐỂ TÍNH HẠNG THÀNH VIÊN)
+   ========================================================================== */
+
+-- 1. Đảm bảo ghế tồn tại cho P001, P002, P003, P004
+INSERT IGNORE INTO GHE (MaPhong, HangGhe, SoGhe, LoaiGhe)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 100)
+SELECT 'P001', CHAR(65 + (n-1) DIV 10), ((n-1) MOD 10) + 1, 'Thường' FROM seq;
+
+INSERT IGNORE INTO GHE (MaPhong, HangGhe, SoGhe, LoaiGhe)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 80)
+SELECT 'P002', CHAR(65 + (n-1) DIV 10), ((n-1) MOD 10) + 1, 'Thường' FROM seq;
+
+INSERT IGNORE INTO GHE (MaPhong, HangGhe, SoGhe, LoaiGhe)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 150)
+SELECT 'P003', CHAR(65 + (n-1) DIV 15), ((n-1) MOD 15) + 1, 'Thường' FROM seq;
+
+INSERT IGNORE INTO GHE (MaPhong, HangGhe, SoGhe, LoaiGhe)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 60)
+SELECT 'P004', CHAR(65 + (n-1) DIV 10), ((n-1) MOD 10) + 1, 'Thường' FROM seq;
+
+-- 2. Thêm các suất chiếu rải rác trong năm 2025 cho TẤT CẢ PHIM (PH001 - PH008)
+INSERT INTO SUAT_CHIEU (MaSuatChieu, MaPhim, MaPhong, NgayChieu, GioBatDau, GioKetThuc, GiaVeCoBan, TrangThai) VALUES
+('SC_HIS_01', 'PH001', 'P001', '2025-01-05', '18:00', '21:00', 100000, 'Đã chiếu'), -- Avengers
+('SC_HIS_02', 'PH002', 'P001', '2025-02-14', '19:00', '21:00', 100000, 'Đã chiếu'), -- Nhà Bà Nữ
+('SC_HIS_03', 'PH003', 'P002', '2025-03-08', '20:00', '22:30', 100000, 'Đã chiếu'), -- Fast 9
+('SC_HIS_04', 'PH004', 'P003', '2025-04-30', '10:00', '12:00', 100000, 'Đã chiếu'), -- Conan
+('SC_HIS_05', 'PH005', 'P004', '2025-06-01', '15:00', '17:30', 100000, 'Đã chiếu'), -- Spider-Man
+('SC_HIS_06', 'PH006', 'P003', '2025-07-15', '19:00', '21:40', 100000, 'Đã chiếu'), -- Dune
+('SC_HIS_07', 'PH007', 'P002', '2025-08-20', '18:00', '20:00', 100000, 'Đã chiếu'), -- Lật Mặt
+('SC_HIS_08', 'PH008', 'P001', '2025-10-31', '21:30', '23:30', 100000, 'Đã chiếu'); -- Conjuring
+
+-- 3. Đơn hàng & Thanh toán (Phân bổ doanh thu đều cho các phim)
+-- KH005 (Platinum ~11M): Mua vé nhóm cho nhiều phim khác nhau
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
+('DH_HIS_01', 'KH005', 'Online', '2025-01-05 10:00', 2550000, 'Đã thanh toán'), -- PH001: 15 vé + 15 combo
+('DH_HIS_02', 'KH005', 'Online', '2025-02-14 10:00', 1700000, 'Đã thanh toán'), -- PH002: 10 vé + 10 combo
+('DH_HIS_03', 'KH005', 'Online', '2025-03-08 10:00', 1360000, 'Đã thanh toán'), -- PH003: 8 vé + 8 combo
+('DH_HIS_04', 'KH005', 'Online', '2025-04-30 10:00', 1360000, 'Đã thanh toán'), -- PH004: 8 vé + 8 combo
+('DH_HIS_05', 'KH005', 'Online', '2025-06-01 10:00', 1360000, 'Đã thanh toán'), -- PH005: 8 vé + 8 combo
+('DH_HIS_06', 'KH005', 'Online', '2025-07-15 10:00', 1700000, 'Đã thanh toán'), -- PH006: 10 vé + 10 combo
+('DH_HIS_07', 'KH005', 'Online', '2025-08-20 10:00', 1700000, 'Đã thanh toán'); -- PH007: 10 vé + 10 combo
+
+-- KH003 (Gold ~6M): Mua vé gia đình
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
+('DH_HIS_08', 'KH003', 'Online', '2025-01-05 11:00', 1700000, 'Đã thanh toán'), -- PH001
+('DH_HIS_09', 'KH003', 'Online', '2025-03-08 11:00', 1700000, 'Đã thanh toán'), -- PH003
+('DH_HIS_10', 'KH003', 'Online', '2025-06-01 11:00', 1700000, 'Đã thanh toán'), -- PH005
+('DH_HIS_11', 'KH003', 'Online', '2025-10-31 11:00', 1700000, 'Đã thanh toán'); -- PH008
+
+-- KH010, KH015, KH020 (Platinum > 10M): Mua Mô hình Iron Man (5M) x 2 + Vé
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
+('DH_HIS_12', 'KH010', 'Online', '2025-05-01 09:00', 10100000, 'Đã thanh toán'), -- 2 Mô hình + 1 vé
+('DH_HIS_13', 'KH015', 'Online', '2025-05-02 09:00', 10100000, 'Đã thanh toán'),
+('DH_HIS_14', 'KH020', 'Online', '2025-05-03 09:00', 10100000, 'Đã thanh toán');
+
+-- KH008, KH013, KH018 (Gold > 5M): Mua Mô hình Iron Man (5M) + Vé
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
+('DH_HIS_15', 'KH008', 'Online', '2025-06-01 09:00', 5100000, 'Đã thanh toán'), -- 1 Mô hình + 1 vé
+('DH_HIS_16', 'KH013', 'Online', '2025-06-02 09:00', 5100000, 'Đã thanh toán'),
+('DH_HIS_17', 'KH018', 'Online', '2025-06-03 09:00', 5100000, 'Đã thanh toán');
+
+-- KH002, KH006, KH012, KH016 (Silver > 2M): Mua Bộ sưu tập Marvel (2M) + Vé
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai) VALUES
+('DH_HIS_18', 'KH002', 'Online', '2025-07-01 09:00', 2100000, 'Đã thanh toán'), -- 1 Bộ sưu tập + 1 vé
+('DH_HIS_19', 'KH006', 'Online', '2025-07-02 09:00', 2100000, 'Đã thanh toán'),
+('DH_HIS_20', 'KH012', 'Online', '2025-07-03 09:00', 2100000, 'Đã thanh toán'),
+('DH_HIS_21', 'KH016', 'Online', '2025-07-04 09:00', 2100000, 'Đã thanh toán');
+
+INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES
+-- KH005
+('DH_HIS_01', 'MH003', 15, 70000),
+('DH_HIS_02', 'MH003', 10, 70000),
+('DH_HIS_03', 'MH003', 8, 70000),
+('DH_HIS_04', 'MH003', 8, 70000),
+('DH_HIS_05', 'MH003', 8, 70000),
+('DH_HIS_06', 'MH003', 10, 70000),
+('DH_HIS_07', 'MH003', 10, 70000),
+-- KH003
+('DH_HIS_08', 'MH003', 10, 70000),
+('DH_HIS_09', 'MH003', 10, 70000),
+('DH_HIS_10', 'MH003', 10, 70000),
+('DH_HIS_11', 'MH003', 10, 70000),
+-- Platinum VIP Items
+('DH_HIS_12', 'MH_VIP_1', 2, 5000000),
+('DH_HIS_13', 'MH_VIP_1', 2, 5000000),
+('DH_HIS_14', 'MH_VIP_1', 2, 5000000),
+-- Gold VIP Items
+('DH_HIS_15', 'MH_VIP_1', 1, 5000000),
+('DH_HIS_16', 'MH_VIP_1', 1, 5000000),
+('DH_HIS_17', 'MH_VIP_1', 1, 5000000),
+-- Silver VIP Items
+('DH_HIS_18', 'MH_VIP_2', 1, 2000000),
+('DH_HIS_19', 'MH_VIP_2', 1, 2000000),
+('DH_HIS_20', 'MH_VIP_2', 1, 2000000),
+('DH_HIS_21', 'MH_VIP_2', 1, 2000000);
+
+INSERT INTO THANH_TOAN (MaThanhToan, MaDonHang, NgayThanhToan, PhuongThuc, TrangThai, SoTien)
+SELECT CONCAT('TT_', MaDonHang), MaDonHang, ThoiGianDat, 'Thẻ', 'Đã thanh toán', TongTien 
+FROM DON_HANG WHERE MaDonHang LIKE 'DH_HIS_%';
+
+-- 4. Vé xem phim (Sử dụng CTE để sinh vé)
+-- KH005
+-- DH_HIS_01: 15 vé SC_HIS_01 (PH001)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 15)
+SELECT CONCAT('VE_H1_', n), 'SC_HIS_01', 'P001', CHAR(65 + (n-1) DIV 10), ((n-1) MOD 10) + 1, 'KH005', 'DH_HIS_01', 100000, '2025-01-05 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_02: 10 vé SC_HIS_02 (PH001)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H2_', n), 'SC_HIS_02', 'P001', 'A', n, 'KH005', 'DH_HIS_02', 100000, '2025-02-14 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_03: 8 vé SC_HIS_03 (PH002)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 8)
+SELECT CONCAT('VE_H3_', n), 'SC_HIS_03', 'P002', 'A', n, 'KH005', 'DH_HIS_03', 100000, '2025-03-08 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_04: 8 vé SC_HIS_04 (PH003)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 8)
+SELECT CONCAT('VE_H4_', n), 'SC_HIS_04', 'P003', 'A', n, 'KH005', 'DH_HIS_04', 100000, '2025-04-30 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_05: 8 vé SC_HIS_05 (PH004)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 8)
+SELECT CONCAT('VE_H5_', n), 'SC_HIS_05', 'P004', 'A', n, 'KH005', 'DH_HIS_05', 100000, '2025-06-01 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_06: 10 vé SC_HIS_06 (PH003)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H6_', n), 'SC_HIS_06', 'P003', 'A', n, 'KH005', 'DH_HIS_06', 100000, '2025-07-15 10:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_07: 10 vé SC_HIS_07 (PH002)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H7_', n), 'SC_HIS_07', 'P002', 'A', n, 'KH005', 'DH_HIS_07', 100000, '2025-08-20 10:00', 'Đã thanh toán' FROM seq;
+
+-- KH003
+-- DH_HIS_08: 10 vé SC_HIS_01 (PH001) - Khác hàng ghế
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H8_', n), 'SC_HIS_01', 'P001', 'D', n, 'KH003', 'DH_HIS_08', 100000, '2025-01-05 11:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_09: 10 vé SC_HIS_03 (PH002) - Khác hàng ghế
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H9_', n), 'SC_HIS_03', 'P002', 'B', n, 'KH003', 'DH_HIS_09', 100000, '2025-03-08 11:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_10: 10 vé SC_HIS_05 (PH004) - Khác hàng ghế
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H10_', n), 'SC_HIS_05', 'P004', 'B', n, 'KH003', 'DH_HIS_10', 100000, '2025-06-01 11:00', 'Đã thanh toán' FROM seq;
+
+-- DH_HIS_11: 10 vé SC_HIS_08 (PH001)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai)
+WITH RECURSIVE seq AS (SELECT 1 as n UNION ALL SELECT n+1 FROM seq WHERE n < 10)
+SELECT CONCAT('VE_H11_', n), 'SC_HIS_08', 'P001', 'A', n, 'KH003', 'DH_HIS_11', 100000, '2025-10-31 11:00', 'Đã thanh toán' FROM seq;
+
+-- Vé lẻ cho các đơn hàng VIP (Mỗi đơn 1 vé)
+INSERT INTO VE_XEM_PHIM (MaVe, MaSuatChieu, MaPhong, HangGhe, SoGhe, MaNguoiDung_KH, MaDonHang, GiaVeCuoi, NgayDat, TrangThai) VALUES
+('VE_H12_1', 'SC_HIS_01', 'P001', 'E', 1, 'KH010', 'DH_HIS_12', 100000, '2025-05-01 09:00', 'Đã thanh toán'),
+('VE_H13_1', 'SC_HIS_01', 'P001', 'E', 2, 'KH015', 'DH_HIS_13', 100000, '2025-05-02 09:00', 'Đã thanh toán'),
+('VE_H14_1', 'SC_HIS_01', 'P001', 'E', 3, 'KH020', 'DH_HIS_14', 100000, '2025-05-03 09:00', 'Đã thanh toán'),
+('VE_H15_1', 'SC_HIS_01', 'P001', 'E', 4, 'KH008', 'DH_HIS_15', 100000, '2025-06-01 09:00', 'Đã thanh toán'),
+('VE_H16_1', 'SC_HIS_01', 'P001', 'E', 5, 'KH013', 'DH_HIS_16', 100000, '2025-06-02 09:00', 'Đã thanh toán'),
+('VE_H17_1', 'SC_HIS_01', 'P001', 'E', 6, 'KH018', 'DH_HIS_17', 100000, '2025-06-03 09:00', 'Đã thanh toán'),
+('VE_H18_1', 'SC_HIS_01', 'P001', 'E', 7, 'KH002', 'DH_HIS_18', 100000, '2025-07-01 09:00', 'Đã thanh toán'),
+('VE_H19_1', 'SC_HIS_01', 'P001', 'E', 8, 'KH006', 'DH_HIS_19', 100000, '2025-07-02 09:00', 'Đã thanh toán'),
+('VE_H20_1', 'SC_HIS_01', 'P001', 'E', 9, 'KH012', 'DH_HIS_20', 100000, '2025-07-03 09:00', 'Đã thanh toán'),
+('VE_H21_1', 'SC_HIS_01', 'P001', 'E', 10, 'KH016', 'DH_HIS_21', 100000, '2025-07-04 09:00', 'Đã thanh toán');

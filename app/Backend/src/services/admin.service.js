@@ -12,7 +12,9 @@ class AdminService {
                 SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
                        p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
                        p.DoTuoi, p.ChuDePhim, p.Anh,
-                       ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
+                       ROUND(AVG(d.DiemSo),1) AS DiemDanhGia,
+                       FUNC_DanhGiaHieuQuaPhim(p.MaPhim) AS HieuQua,
+                       FUNC_DanhGiaHieuQuaPhim_Moi(p.MaPhim) AS HieuQuaMoi
                 FROM PHIM p
                 LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
                 GROUP BY p.MaPhim
@@ -27,7 +29,9 @@ class AdminService {
             SELECT p.MaPhim, p.TenPhim, p.ThoiLuong, p.NgonNgu, p.QuocGia,
                    p.DaoDien, p.DienVienChinh, p.NgayKhoiChieu, p.MoTaNoiDung AS MoTaNoiDung,
                    p.DoTuoi, p.ChuDePhim, p.Anh,
-                   ROUND(AVG(d.DiemSo),1) AS DiemDanhGia
+                   ROUND(AVG(d.DiemSo),1) AS DiemDanhGia,
+                   FUNC_DanhGiaHieuQuaPhim(p.MaPhim) AS HieuQua,
+                   FUNC_DanhGiaHieuQuaPhim_Moi(p.MaPhim) AS HieuQuaMoi
             FROM PHIM p
             LEFT JOIN DANH_GIA d ON p.MaPhim = d.MaPhim
             WHERE p.TenPhim LIKE ${searchPattern}

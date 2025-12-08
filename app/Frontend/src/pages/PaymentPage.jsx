@@ -17,7 +17,8 @@ const PaymentPage = () => {
             const payload = {
                 MaSuatChieu: bookingInfo.suatChieu.MaSuatChieu,
                 MaPhong: bookingInfo.suatChieu.MaPhong,
-                DanhSachGhe: bookingInfo.seats
+                DanhSachGhe: bookingInfo.seats,
+                DanhSachCombo: bookingInfo.combos ? bookingInfo.combos.map(c => ({ MaHang: c.MaHang, SoLuong: c.SoLuong })) : []
             };
 
             // Gọi API đặt vé
@@ -44,6 +45,18 @@ const PaymentPage = () => {
                 <p><strong>Rạp:</strong> {bookingInfo.suatChieu.phong_chieu.Ten}</p>
                 <p><strong>Suất chiếu:</strong> {bookingInfo.suatChieu.GioBatDau} - {bookingInfo.suatChieu.NgayChieu}</p>
                 <p><strong>Ghế:</strong> {bookingInfo.seats.map(s => `${s.HangGhe}${s.SoGhe}`).join(', ')}</p>
+                
+                {bookingInfo.combos && bookingInfo.combos.length > 0 && (
+                    <div className="mt-2">
+                        <strong>Combo:</strong>
+                        <ul className="list-disc list-inside pl-4 text-gray-300 text-sm mt-1">
+                            {bookingInfo.combos.map(c => (
+                                <li key={c.MaHang}>{c.TenHang} x {c.SoLuong} ({Number(c.DonGia).toLocaleString()} đ)</li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
                 <hr className="border-gray-600"/>
                 <p className="text-2xl font-bold text-right text-yellow-400">
                     Tổng cộng: {bookingInfo.totalPrice.toLocaleString()} VNĐ

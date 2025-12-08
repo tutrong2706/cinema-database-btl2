@@ -133,6 +133,8 @@ const AdminPage = () => {
                                 <th className="p-4 font-semibold">Năm</th>
                                 <th className="p-4 font-semibold">Thời Lượng</th>
                                 <th className="p-4 font-semibold">Rating</th>
+                                <th className="p-4 font-semibold">Hiệu Quả (Theo ghế)</th>
+                                <th className="p-4 font-semibold">Hiệu Quả (Theo doanh thu)</th>
                                 <th className="p-4 font-semibold text-right">Chức năng</th>
                             </tr>
                         </thead>
@@ -152,6 +154,25 @@ const AdminPage = () => {
                                     <td className="p-4 text-gray-300">{new Date(p.NgayKhoiChieu).getFullYear()}</td>
                                     <td className="p-4 text-gray-300">{p.ThoiLuong}p</td>
                                     <td className="p-4 text-yellow-400 font-bold">★ {p.DiemDanhGia || 'N/A'}</td>
+                                    <td className="p-4">
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                            p.HieuQua?.includes('Rất Hot') ? 'bg-red-500/20 text-red-400' :
+                                            p.HieuQua?.includes('Bình thường') ? 'bg-blue-500/20 text-blue-400' :
+                                            'bg-gray-500/20 text-gray-400'
+                                        }`}>
+                                            {p.HieuQua || 'Chưa có dữ liệu'}
+                                        </span>
+                                    </td>
+                                    <td className="p-4">
+                                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                                            p.HieuQuaMoi?.includes('Tuyệt vời') ? 'bg-purple-500/20 text-purple-400' :
+                                            p.HieuQuaMoi?.includes('Hot') ? 'bg-red-500/20 text-red-400' :
+                                            p.HieuQuaMoi?.includes('Bình thường') ? 'bg-blue-500/20 text-blue-400' :
+                                            'bg-gray-500/20 text-gray-400'
+                                        }`}>
+                                            {p.HieuQuaMoi || 'Chưa có dữ liệu'}
+                                        </span>
+                                    </td>
                                     <td className="p-4 flex justify-end gap-2 whitespace-nowrap">
                                         <button onClick={() => openEdit(p)} className="bg-blue-600/30 text-blue-300 hover:bg-blue-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Sửa</button>
                                         <button onClick={() => handleDelete(p.MaPhim)} className="bg-red-600/30 text-red-300 hover:bg-red-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Xóa</button>

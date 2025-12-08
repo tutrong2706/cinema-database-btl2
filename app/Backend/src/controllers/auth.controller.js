@@ -611,7 +611,27 @@ async getUserProfile(req, res, next) {
     }
 }
 
+    async getCombos(req, res, next) {
+        try {
+            const result = await authService.getCombos();
+            const response = handleSuccessResponse(200, "Lấy danh sách combo thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
 
+    async booking(req, res, next) {
+        try {
+            const userId = req.user.userId;
+            const data = req.body;
+            const result = await authService.booking(userId, data);
+            const response = handleSuccessResponse(200, "Đặt vé thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new AuthController();

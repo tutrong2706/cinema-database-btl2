@@ -38,7 +38,7 @@ BEGIN
         p.MaPhim,
         p.TenPhim,
         COUNT(v.MaVe) AS SoVeDaBan,
-        FUNC_TinhDoanhThuPhim(p.MaPhim) AS TongDoanhThu
+        FUNC_TinhDoanhThuVe(p.MaPhim) AS TongDoanhThu
     FROM PHIM p
     LEFT JOIN SUAT_CHIEU s ON p.MaPhim = s.MaPhim
     LEFT JOIN VE_XEM_PHIM v ON s.MaSuatChieu = v.MaSuatChieu AND v.TrangThai = 'Đã thanh toán'

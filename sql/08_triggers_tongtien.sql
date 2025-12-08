@@ -40,3 +40,39 @@ BEGIN
     WHERE MaDonHang = NEW.MaDonHang;
 END$$
 DELIMITER ;
+
+/* =======================================================================
+   Tính tổng tiền đơn hàng khi thêm/xóa/sửa VÉ XEM PHIM
+   ======================================================================= */
+DELIMITER $$
+CREATE TRIGGER TRG_VE_UpdateTongTien_Insert
+AFTER INSERT ON VE_XEM_PHIM
+FOR EACH ROW
+BEGIN
+    UPDATE DON_HANG
+    SET TongTien = TongTien + NEW.GiaVeCuoi
+    WHERE MaDonHang = NEW.MaDonHang;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER TRG_VE_UpdateTongTien_Delete
+AFTER DELETE ON VE_XEM_PHIM
+FOR EACH ROW
+BEGIN
+    UPDATE DON_HANG
+    SET TongTien = TongTien - OLD.GiaVeCuoi
+    WHERE MaDonHang = OLD.MaDonHang;
+END$$
+DELIMITER ;
+
+DELIMITER $$
+CREATE TRIGGER TRG_VE_UpdateTongTien_Update
+AFTER UPDATE ON VE_XEM_PHIM
+FOR EACH ROW
+BEGIN
+    UPDATE DON_HANG
+    SET TongTien = TongTien - OLD.GiaVeCuoi + NEW.GiaVeCuoi
+    WHERE MaDonHang = NEW.MaDonHang;
+END$$
+DELIMITER ;

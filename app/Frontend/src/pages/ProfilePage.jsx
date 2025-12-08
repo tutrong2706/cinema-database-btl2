@@ -5,6 +5,7 @@ import axiosClient from '../api/axiosClient';
 const ProfilePage = () => {
     const navigate = useNavigate();
     const [profile, setProfile] = useState(null);
+    const [history, setHistory] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
@@ -15,21 +16,26 @@ const ProfilePage = () => {
             return;
         }
 
-        const fetchProfile = async () => {
+        const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axiosClient.get('/auth/profile');
-                setProfile(response.data.meta);
+                const [profileRes, historyRes] = await Promise.all([
+                    axiosClient.get('/auth/profile'),
+                    axiosClient.get('/user/history')
+                ]);
+                
+                setProfile(profileRes.data.meta);
+                setHistory(historyRes.data.meta);
                 setError(null);
             } catch (err) {
-                setError(err.response?.data?.message || 'Lỗi khi tải thông tin cá nhân');
-                console.error('Error fetching profile:', err);
+                setError(err.response?.data?.message || 'Lỗi khi tải dữ liệu');
+                console.error('Error fetching data:', err);
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProfile();
+        fetchData();
     }, [navigate]);
 
     if (loading) {
@@ -155,6 +161,80 @@ const ProfilePage = () => {
                                 <label className="text-sm text-gray-400 font-semibold">ID Thành Viên</label>
                             </div>
                             <p className="text-white text-lg font-mono">{profile.MaNguoiDung}</p>
+                        </div>
+                    </div>
+
+                    {/* Transaction History */}
+                    <div className="bg-gray-800 rounded-3xl shadow-2xl p-8 mb-8 border border-gray-700">
+                        <h3 className="text-2xl font-bold text-white mb-6 border-b border-gray-700 pb-4">Lịch Sử Giao Dịch</h3>
+                        <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                            {history.length === 0 ? (
+                                <p className="text-gray-400 text-center py-8">Chưa có giao dịch nào.</p>
+                            ) : (
+                                history.map((order) => (
+                                    <div key={order.MaDonHang} className="bg-gray-700/50 rounded-xl p-5 border border-gray-600 hover:border-[#00E5FF] transition">
+                                        <div className="flex justify-between items-start mb-4">
+                                            <div>
+                                                <p className="text-[#00E5FF] font-bold text-lg">#{order.MaDonHang}</p>
+                                                <p className="text-gray-400 text-sm">{new Date(order.ThoiGianDat).toLocaleString('vi-VN')}</p>
+                                            </div>
+                                            <div className="text-right">
+                                                <p className="text-white font-bold text-xl">{parseInt(order.TongTien).toLocaleString('vi-VN')} đ</p>
+                                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${
+                                                    order.TrangThai === 'Đã thanh toán' ? 'bg-green-500/20 text-green-400' :
+                                                    order.TrangThai === 'Hủy' ? 'bg-red-500/20 text-red-400' :
+                                                    'bg-yellow-500/20 text-yellow-400'
+                                                }`}>
+                                                    {order.TrangThai}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        
+                                        {/* Tickets */}
+                                        {order.ve_xem_phim && order.ve_xem_phim.length > 0 && (
+                                            <div className="mb-3">
+                                                <p className="text-gray-300 font-semibold text-sm mb-2">Vé xem phim:</p>
+                                                <div className="space-y-2">
+                                                    {order.ve_xem_phim.map((ve, idx) => (
+                                                        <div key={idx} className="flex justify-between text-sm bg-gray-800/50 p-2 rounded">
+                                                            <div>
+                                                                <p className="text-white font-medium">{ve.suat_chieu?.phim?.TenPhim}</p>
+                                                                <p className="text-gray-400 text-xs">
+                                                                    {ve.suat_chieu?.phong_chieu?.rap_chieu_phim?.Ten} - {ve.suat_chieu?.phong_chieu?.Ten}
+                                                                </p>
+                                                                <p className="text-gray-400 text-xs">
+                                                                    Ghế: {ve.HangGhe}{ve.SoGhe}
+                                                                </p>
+                                                                {ve.ap_dung && (
+                                                                    <p className="text-green-400 text-xs mt-1">
+                                                                        Mã giảm: {ve.ap_dung.chuong_trinh_khuyen_mai?.TenChuongTrinh} (-{parseInt(ve.ap_dung.chuong_trinh_khuyen_mai?.MucGiam).toLocaleString('vi-VN')}đ)
+                                                                    </p>
+                                                                )}
+                                                            </div>
+                                                            <p className="text-gray-300">{parseInt(ve.GiaVeCuoi).toLocaleString('vi-VN')} đ</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {/* Items */}
+                                        {order.gom && order.gom.length > 0 && (
+                                            <div>
+                                                <p className="text-gray-300 font-semibold text-sm mb-2">Đồ ăn & Thức uống:</p>
+                                                <div className="space-y-2">
+                                                    {order.gom.map((item, idx) => (
+                                                        <div key={idx} className="flex justify-between text-sm bg-gray-800/50 p-2 rounded">
+                                                            <p className="text-white">{item.mat_hang?.TenHang} x{item.SoLuong}</p>
+                                                            <p className="text-gray-300">{parseInt(item.DonGia * item.SoLuong).toLocaleString('vi-VN')} đ</p>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))
+                            )}
                         </div>
                     </div>
 

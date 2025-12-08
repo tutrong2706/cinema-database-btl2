@@ -358,8 +358,9 @@ class authService {
         }
 
         // Gọi hàm FUNC_XepHangThanhVien để lấy hạng thành viên mới nhất
-        const rankResult = await prisma.$queryRaw`SELECT FUNC_XepHangThanhVien(${MaNguoiDung}) as Rank`;
-        const updatedRank = rankResult[0]?.Rank || user.khach_hang?.LoaiThanhVien || 'Bronze';
+        // RANK là từ khóa trong MySQL 8.0 -> Cần đổi alias hoặc bọc ``
+        const rankResult = await prisma.$queryRaw`SELECT FUNC_XepHangThanhVien(${MaNguoiDung}) as HangTV`;
+        const updatedRank = rankResult[0]?.HangTV || user.khach_hang?.LoaiThanhVien || 'Bronze';
 
         return {
             MaNguoiDung: user.MaNguoiDung,
@@ -371,6 +372,111 @@ class authService {
             LoaiThanhVien: updatedRank,
             DiemTichLuy: user.khach_hang?.DiemTichLuy || 0
         };
+    }
+
+    // ================================
+    //  LẤY DANH SÁCH COMBO
+    // ================================
+    async getCombos() {
+        return await prisma.mat_hang.findMany({
+            where: { LoaiHang: 'DO_AN' }
+        });
+    }
+
+    // ================================
+    //  ĐẶT VÉ (Booking)
+    // ================================
+    async booking(userId, data) {
+        const { MaSuatChieu, MaPhong, DanhSachGhe, DanhSachCombo } = data;
+        // DanhSachGhe: [{ HangGhe: 'A', SoGhe: 1 }, ...]
+        // DanhSachCombo: [{ MaHang: 'MH01', SoLuong: 2 }, ...]
+
+        return await prisma.$transaction(async (tx) => {
+            // 1. Tạo Đơn Hàng
+            const maDonHang = "DH" + Date.now();
+            
+            // Tính tổng tiền vé
+            const suatChieu = await tx.suat_chieu.findUnique({
+                where: { MaSuatChieu }
+            });
+            if (!suatChieu) throw new BadRequestError("Suất chiếu không tồn tại");
+            
+            const giaVe = Number(suatChieu.GiaVeCoBan);
+            const tongTienVe = giaVe * DanhSachGhe.length;
+            
+            // Tính tổng tiền Combo
+            let tongTienCombo = 0;
+            if (DanhSachCombo && DanhSachCombo.length > 0) {
+                for (const combo of DanhSachCombo) {
+                    const item = await tx.mat_hang.findUnique({ where: { MaHang: combo.MaHang } });
+                    if (item) {
+                        tongTienCombo += Number(item.DonGia) * combo.SoLuong;
+                    }
+                }
+            }
+            
+            const tongTien = tongTienVe + tongTienCombo;
+
+            await tx.don_hang.create({
+                data: {
+                    MaDonHang: maDonHang,
+                    MaNguoiDung_KH: userId,
+                    PhuongThuc: "Thẻ tín dụng", // Mặc định hoặc từ FE
+                    ThoiGianDat: new Date(),
+                    TongTien: tongTien,
+                    TrangThai: "Đã thanh toán" // Giả lập thanh toán thành công luôn
+                }
+            });
+
+            // 2. Tạo Vé
+            for (const ghe of DanhSachGhe) {
+                await tx.ve_xem_phim.create({
+                    data: {
+                        MaVe: "VE" + Math.floor(Math.random() * 1000000) + Date.now().toString().slice(-4),
+                        MaSuatChieu,
+                        MaPhong,
+                        HangGhe: ghe.HangGhe,
+                        SoGhe: ghe.SoGhe,
+                        MaNguoiDung_KH: userId,
+                        MaDonHang: maDonHang,
+                        GiaVeCuoi: giaVe,
+                        NgayDat: new Date(),
+                        TrangThai: "Đã thanh toán"
+                    }
+                });
+            }
+
+            // 3. Tạo GOM (Combo items)
+            if (DanhSachCombo && DanhSachCombo.length > 0) {
+                for (const combo of DanhSachCombo) {
+                    const item = await tx.mat_hang.findUnique({ where: { MaHang: combo.MaHang } });
+                    if (item) {
+                        await tx.gom.create({
+                            data: {
+                                MaDonHang: maDonHang,
+                                MaHang: combo.MaHang,
+                                SoLuong: combo.SoLuong,
+                                DonGia: item.DonGia
+                            }
+                        });
+                    }
+                }
+            }
+
+            // 4. Tạo Thanh Toán (Để kích hoạt Trigger cộng điểm & xếp hạng)
+            await tx.thanh_toan.create({
+                data: {
+                    MaThanhToan: "TT" + Date.now(),
+                    MaDonHang: maDonHang,
+                    NgayThanhToan: new Date(),
+                    PhuongThuc: "Thẻ tín dụng",
+                    TrangThai: "Đã thanh toán",
+                    SoTien: tongTien
+                }
+            });
+
+            return { MaDonHang: maDonHang, TongTien: tongTien };
+        });
     }
 
     // ================================
