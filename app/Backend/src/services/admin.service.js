@@ -97,6 +97,32 @@ class AdminService {
             throw new BadRequestError(error.message.split('\n').pop());
         }
     }
+
+    // 5. Báo cáo doanh thu (Gọi SP_BaoCaoDoanhThuPhim)
+    async getRevenueReport() {
+        try {
+            // Gọi SP
+            const result = await prisma.$queryRaw`CALL SP_BaoCaoDoanhThuPhim();`;
+            
+            // Prisma CALL result có thể là array hoặc nested
+            let data = result;
+            
+            // Nếu là nested array (result[0] là array), extract nó
+            if (Array.isArray(result) && result.length > 0 && Array.isArray(result[0])) {
+                data = result[0];
+            }
+            
+            // Map f0, f1, f2, f3 thành MaPhim, TenPhim, SoVeDaBan, TongDoanhThu
+            return data.map(item => ({
+                MaPhim: item.f0 || item.MaPhim,
+                TenPhim: item.f1 || item.TenPhim,
+                SoVeDaBan: Number(item.f2 || item.SoVeDaBan || 0),
+                TongDoanhThu: Number(item.f3 || item.TongDoanhThu || 0)
+            }));
+        } catch (error) {
+            throw new Error("Lỗi khi lấy báo cáo doanh thu: " + error.message);
+        }
+    }
 }
 
 export default new AdminService();

@@ -10,5 +10,6 @@ adminRouter.get('/phims', adminController.getPhims);
 adminRouter.post('/phims', adminController.createPhim);
 adminRouter.put('/phims/:id', adminController.updatePhim);
 adminRouter.delete('/phims/:id', adminController.deletePhim);
+adminRouter.get('/revenue-report', adminController.revenueReport);
 
 export default adminRouter;

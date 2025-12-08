@@ -18,7 +18,4 @@ authRouter.get('/sorted-by-rating',authController.getPhimsSortedByRating);
 authRouter.get('/filter', authController.filterPhims);
 authRouter.get('/profile', authMiddleware, authController.getUserProfile);
 
-
-
-
 export default authRouter;
