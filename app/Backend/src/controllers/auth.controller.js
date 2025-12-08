@@ -1,5 +1,6 @@
 import authService from "../services/auth.service.js";
 import { handleSuccessResponse } from "../helpers/handleResponse.js";
+import { BadRequestError } from "../helpers/handleError.js";
 
 class AuthController{
 
@@ -538,6 +539,73 @@ async filterPhims(req, res, next) {
             message: "Lọc phim thành công",
             data
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+/**
+ * @swagger
+ * /auth/profile:
+ *   get:
+ *     summary: Lấy thông tin cá nhân của người dùng
+ *     tags: [Auth]
+ *     security:
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Thông tin cá nhân người dùng
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 MaNguoiDung:
+ *                   type: string
+ *                   example: "KH001"
+ *                 HoTen:
+ *                   type: string
+ *                   example: "Nguyễn Văn A"
+ *                 Email:
+ *                   type: string
+ *                   example: "a@example.com"
+ *                 SDT:
+ *                   type: string
+ *                   example: "0901111111"
+ *                 DiaChi:
+ *                   type: string
+ *                   example: "Q1, TP.HCM"
+ *                 GioiTinh:
+ *                   type: string
+ *                   example: "M"
+ *                 LoaiThanhVien:
+ *                   type: string
+ *                   example: "Bronze"
+ *                 DiemTichLuy:
+ *                   type: integer
+ *                   example: 10
+ *       401:
+ *         description: Chưa đăng nhập
+ *       500:
+ *         description: Lỗi server
+ */
+async getUserProfile(req, res, next) {
+    try {
+        const { userId } = req.user;
+
+        if (!userId) {
+            throw new BadRequestError("Người dùng chưa đăng nhập");
+        }
+
+        const profile = await authService.getUserProfile(userId);
+
+        const response = handleSuccessResponse(
+            200,
+            "Lấy thông tin cá nhân thành công",
+            profile
+        );
+
+        res.status(200).json(response);
     } catch (error) {
         next(error);
     }
