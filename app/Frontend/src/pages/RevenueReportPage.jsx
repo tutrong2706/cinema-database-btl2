@@ -78,7 +78,7 @@ const RevenueReportPage = () => {
                 {/* Header */}
                 <div className="mb-8">
                     <h1 className="text-4xl font-extrabold text-white border-l-4 border-[#00E5FF] pl-4 mb-2">
-                         BÁOCÁO DOANH THU PHIM
+                         BÁO CÁO DOANH THU PHIM
                     </h1>
                     <p className="text-gray-400 text-sm ml-4">
                     </p>

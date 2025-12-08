@@ -110,8 +110,15 @@ const HomePage = () => {
                         >
                             <option value="" className="bg-gray-900 text-white">Tất cả thể loại</option>
                             <option value="Hành động" className="bg-gray-900 text-white">Hành động</option>
+                            <option value="Hài" className="bg-gray-900 text-white">Hài</option>
                             <option value="Tình cảm" className="bg-gray-900 text-white">Tình cảm</option>
-                            {/* Thêm các thể loại khác tại đây */}
+                            <option value="Hoạt hình" className="bg-gray-900 text-white">Hoạt hình</option>
+                            <option value="Siêu anh hùng" className="bg-gray-900 text-white">Siêu anh hùng</option>
+                            <option value="Viễn tưởng" className="bg-gray-900 text-white">Viễn tưởng</option>
+                            <option value="Kinh dị" className="bg-gray-900 text-white">Kinh dị</option>
+                            <option value="Gia đình" className="bg-gray-900 text-white">Gia đình</option>
+                            <option value="Tâm lý" className="bg-gray-900 text-white">Tâm lý</option>
+                            <option value="Phiêu lưu" className="bg-gray-900 text-white">Phiêu lưu</option>
                         </select>
 
                         <select 
@@ -119,9 +126,14 @@ const HomePage = () => {
                             onChange={(e) => setYear(e.target.value)}
                         >
                             <option value="" className="bg-gray-900 text-white">Tất cả năm</option>
+                            <option value="2026" className="bg-gray-900 text-white">2026</option>
+                            <option value="2025" className="bg-gray-900 text-white">2025</option>
                             <option value="2024" className="bg-gray-900 text-white">2024</option>
                             <option value="2023" className="bg-gray-900 text-white">2023</option>
-                            {/* Thêm các năm khác tại đây */}
+                            <option value="2022" className="bg-gray-900 text-white">2022</option>
+                            <option value="2021" className="bg-gray-900 text-white">2021</option>
+                            <option value="2020" className="bg-gray-900 text-white">2020</option>
+                            <option value="2019" className="bg-gray-900 text-white">2019</option>
                         </select>
 
                         <button 
