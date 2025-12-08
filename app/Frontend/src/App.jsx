@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage'; // Bạn tự tạo trang này nhé
 import Navbar from './components/Navbar'; // Bạn tự tạo Navbar đơn giản
 import AdminPage from './pages/AdminPage'; // <-- added import
 import SearchPage from './pages/SearchPage'; // <-- added import
+import ProfilePage from './pages/ProfilePage'; // <-- added import
 
 function App() {
   return (
@@ -22,6 +23,7 @@ function App() {
             <Route path="/payment" element={<PaymentPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/admin" element={<AdminPage />} /> {/* <-- added route */}
+            <Route path="/profile" element={<ProfilePage />} /> {/* <-- added profile route */}
           </Routes>
         </div>
       </div>

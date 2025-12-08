@@ -1,6 +1,7 @@
 import authController from "../controllers/auth.controller.js";
 import express from "express";
 import adminRouter from "./admin.router.js";
+import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const authRouter = express.Router();
 
@@ -13,8 +14,9 @@ authRouter.get('/phims/search', authController.searchPhim); // API tìm kiếm c
 authRouter.get('/phims/:MaPhim', authController.getPhimDetail);
 authRouter.get('/suat-chieus', authController.getSuatChieus);
 authRouter.get('/dang-chieu', authController.getNowShowingPhims);
-authRouter.get( '/sorted-by-rating',authController.getPhimsSortedByRating);
+authRouter.get('/sorted-by-rating',authController.getPhimsSortedByRating);
 authRouter.get('/filter', authController.filterPhims);
+authRouter.get('/profile', authMiddleware, authController.getUserProfile);
 
 
 
