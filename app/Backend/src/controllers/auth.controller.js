@@ -611,6 +611,7 @@ async getUserProfile(req, res, next) {
     }
 }
 
+
 }
 
 export default new AuthController();

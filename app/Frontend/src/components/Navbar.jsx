@@ -44,9 +44,14 @@ const Navbar = () => {
                 {/* 3. USER INFO */}
                 <div className="flex items-center gap-6">
                     {isAdmin && (
-                        <Link to="/admin" className="hidden md:flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition border border-gray-600">
-                            <span>⚙️ Chỉnh sửa phim</span>
-                        </Link>
+                        <div className="hidden md:flex items-center gap-2">
+                            <Link to="/admin" className="flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition border border-gray-600">
+                                <span>⚙️ Chỉnh sửa phim</span>
+                            </Link>
+                            <Link to="/revenue-report" className="flex items-center gap-2 text-white bg-gray-800 hover:bg-gray-700 px-4 py-2 rounded-lg font-semibold transition border border-gray-600">
+                                <span>📊 Báo cáo doanh thu</span>
+                            </Link>
+                        </div>
                     )}
 
                     {token ? (

@@ -8,6 +8,7 @@ import Navbar from './components/Navbar'; // Bạn tự tạo Navbar đơn giả
 import AdminPage from './pages/AdminPage'; // <-- added import
 import SearchPage from './pages/SearchPage'; // <-- added import
 import ProfilePage from './pages/ProfilePage'; // <-- added import
+import RevenueReportPage from './pages/RevenueReportPage'; // <-- added import
 
 function App() {
   return (
@@ -24,6 +25,7 @@ function App() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/admin" element={<AdminPage />} /> {/* <-- added route */}
             <Route path="/profile" element={<ProfilePage />} /> {/* <-- added profile route */}
+            <Route path="/revenue-report" element={<RevenueReportPage />} /> {/* <-- added revenue report route */}
           </Routes>
         </div>
       </div>

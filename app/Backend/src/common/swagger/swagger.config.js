@@ -27,17 +27,22 @@ const swaggerDefinition = {
 
     ],
 
-    "components": {
-        "securitySchemes": {
-        "bearerAuth": {
-            "type": "http",
-            "scheme": "bearer",
-            "bearerFormat": "JWT"
+    components: {
+        securitySchemes: {
+            bearerAuth: {
+                type: "http",
+                scheme: "bearer",
+                bearerFormat: "JWT"
+            }
         }
+    },
+
+    // Global security - áp dụng cho tất cả endpoints
+    security: [
+        {
+            bearerAuth: []
         }
-    }
-
-
+    ]
 }
 
 const options = {
@@ -47,6 +52,31 @@ const options = {
 
 const swaggerSpec = swaggerJSDoc(options)
 
+// Custom Swagger UI plugin để inject token từ localStorage
+const swaggerUIOptions = {
+    swaggerOptions: {
+        persistAuthorization: true, // Giữ token sau khi refresh
+    },
+    onComplete: function() {
+        // Tự động inject token từ localStorage khi Swagger load
+        setTimeout(() => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const authorizeBtn = document.querySelector('[data-testid="auth-btn-authorize"]');
+                    const input = document.querySelector('[data-testid="auth-bearer-value"]');
+                    if (input) {
+                        input.value = token;
+                        if (authorizeBtn) authorizeBtn.click();
+                    }
+                } catch (e) {
+                    console.warn('Cannot auto-authorize in Swagger:', e.message);
+                }
+            }
+        }, 500);
+    }
+}
+
 export function setupSwagger(app){
-    app.use("/swagger/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec))
+    app.use("/swagger/api", swaggerUi.serve, swaggerUi.setup(swaggerSpec, swaggerUIOptions))
 }
