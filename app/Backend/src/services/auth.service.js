@@ -372,6 +372,11 @@ class authService {
             DiemTichLuy: user.khach_hang?.DiemTichLuy || 0
         };
     }
+
+    // ================================
+    //  BÁO CÁO DOANH THU (MOVED TO ADMIN SERVICE)
+    // ================================
+
 }
 
 export default new authService();
