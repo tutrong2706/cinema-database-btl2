@@ -80,7 +80,7 @@ INSERT INTO THE_LOAI_PHIM (MaPhim, TheLoai) VALUES
 ('PH004', N'Hoạt hình');
 
 
-I/* =======================================================================
+/* =======================================================================
    3. KHUYẾN MÃI (Cập nhật năm 2025)
    ======================================================================= */
 INSERT INTO CHUONG_TRINH_KHUYEN_MAI
@@ -181,7 +181,7 @@ INSERT INTO DANH_GIA (MaDanhGia, MaNguoiDung, MaPhim, NoiDung, NgayDang, DiemSo)
 ('DG002','KH002','PH001',N'Kỹ xảo đẹp.',             '2024-11-21 21:00', 8),
 ('DG003','KH003','PH002',N'Hài, dễ thương.',         '2024-11-22 19:30', 8),
 ('DG004','KH004','PH003',N'Nhiều cảnh hành động.',   '2024-11-22 18:45', 7),
-('DG005','KH005','PH004',N'Conan quá đỉnh.',         '2024-11-23 22:15', 9);
+('DG005','KH005','PH004',N'Conan quá đỉnh.',         '2024-11-23 22:15', 9),
 -- Review cho Avengers: Endgame (PH001)
 ('DG006', 'KH003', 'PH001', N'Cái kết quá trọn vẹn cho một kỷ nguyên. Yêu Iron Man 3000!', '2024-11-22 09:00:00', 10),
 ('DG007', 'KH004', 'PH001', N'Phim hơi dài nhưng xứng đáng từng phút giây. Cảnh cuối thật sự xúc động.', '2024-11-23 14:30:00', 9),

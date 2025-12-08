@@ -341,6 +341,37 @@ class authService {
         // nhưng ở đây AVG trả về Decimal/Float, nên ổn.
         return result;
     }
+
+    // ================================
+    //  LẤY THÔNG TIN CÁ NHÂN
+    // ================================
+    async getUserProfile(MaNguoiDung) {
+        const user = await prisma.tai_khoan.findUnique({
+            where: { MaNguoiDung },
+            include: {
+                khach_hang: true
+            }
+        });
+
+        if (!user) {
+            throw new NotFoundError("Không tìm thấy thông tin người dùng");
+        }
+
+        // Gọi hàm FUNC_XepHangThanhVien để lấy hạng thành viên mới nhất
+        const rankResult = await prisma.$queryRaw`SELECT FUNC_XepHangThanhVien(${MaNguoiDung}) as Rank`;
+        const updatedRank = rankResult[0]?.Rank || user.khach_hang?.LoaiThanhVien || 'Bronze';
+
+        return {
+            MaNguoiDung: user.MaNguoiDung,
+            HoTen: user.HoTen,
+            Email: user.Email,
+            SDT: user.SDT,
+            DiaChi: user.DiaChi,
+            GioiTinh: user.GioiTinh,
+            LoaiThanhVien: updatedRank,
+            DiemTichLuy: user.khach_hang?.DiemTichLuy || 0
+        };
+    }
 }
 
 export default new authService();
