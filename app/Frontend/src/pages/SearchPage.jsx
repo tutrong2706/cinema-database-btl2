@@ -123,7 +123,7 @@ const SearchPage = () => {
                                         <td className="p-4 text-right">
                                             <button 
                                                 onClick={() => handleBooking(p.MaPhim)} 
-                                                className="bg-red-600 text-white hover:bg-red-700 px-6 py-2 rounded-lg transition text-sm font-bold shadow-lg"
+                                                className="!bg-red-600 text-white hover:bg-red-700 px-6 py-2 rounded-lg transition text-sm font-bold shadow-lg"
                                             >
                                                 ĐẶT VÉ
                                             </button>

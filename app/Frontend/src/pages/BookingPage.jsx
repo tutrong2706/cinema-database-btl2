@@ -114,25 +114,25 @@ const BookingPage = () => {
             <h2 className="text-3xl font-extrabold mb-8 text-center text-[#00E5FF] border-b border-gray-700 pb-3">ĐẶT VÉ XEM PHIM</h2>
 
             {/* Bước 1: Chọn Rạp & Ngày */}
-            <div className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 mb-8 flex flex-col md:flex-row gap-4 items-center">
+            <div className="!bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800 mb-8 flex flex-col md:flex-row gap-4 items-center">
                 <label className="text-gray-300 font-semibold md:w-1/4">Chọn Rạp/Ngày:</label>
                 <select 
-                    className="bg-gray-800 p-3 rounded-lg flex-1 border border-gray-700 text-white focus:border-[#00E5FF] outline-none"
+                    className="!bg-gray-800 p-3 rounded-lg flex-1 border border-gray-700 text-white focus:border-[#00E5FF] outline-none"
                     onChange={(e) => setSelectedRap(e.target.value)}
                     value={selectedRap}
                 >
                     <option value="" className="bg-gray-900">-- Chọn Rạp --</option>
-                    {raps.map(r => <option key={r.MaRapPhim} value={r.MaRapPhim} className="bg-gray-900">{r.Ten}</option>)}
+                    {raps.map(r => <option key={r.MaRapPhim} value={r.MaRapPhim} className="!bg-gray-900">{r.Ten}</option>)}
                 </select>
                 <input 
                     type="date" 
-                    className="bg-gray-800 p-3 rounded-lg border border-gray-700 text-white focus:border-[#00E5FF] outline-none md:w-auto"
+                    className="!bg-gray-800 p-3 rounded-lg border border-gray-700 text-white focus:border-[#00E5FF] outline-none md:w-auto"
                     value={ngayChieu}
                     onChange={(e) => setNgayChieu(e.target.value)}
                 />
                 <button 
                     onClick={handleFindSuatChieu} 
-                    className="bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition md:w-auto w-full"
+                    className="!bg-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-700 transition md:w-auto w-full"
                 >
                     Tìm Suất
                 </button>
@@ -143,13 +143,13 @@ const BookingPage = () => {
                 <div className="mb-10 space-y-6">
                     {Object.entries(
                         suatChieus.reduce((acc, sc) => {
-                            const tenRap = sc.phong_chieu?.rap_chieu_phim?.Ten || "Rạp Khác";
+                            const tenRap = sc.phong_chieu?.rap_chieu_phim?.Ten || "Rạp";
                             if (!acc[tenRap]) acc[tenRap] = [];
                             acc[tenRap].push(sc);
                             return acc;
                         }, {})
                     ).map(([tenRap, listSuat]) => (
-                        <div key={tenRap} className="bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800">
+                        <div key={tenRap} className="!bg-gray-900 p-6 rounded-xl shadow-lg border border-gray-800">
                             <h3 className="text-xl font-bold mb-4 text-white border-b border-gray-700 pb-2 flex items-center gap-2">
                                 <span className="text-[#00E5FF]">🎬</span> {tenRap}
                             </h3>
@@ -160,8 +160,8 @@ const BookingPage = () => {
                                         onClick={() => { setSelectedSuat(sc); setSelectedSeats([]); }}
                                         className={`px-5 py-2 rounded-lg font-semibold transition text-sm ${
                                             selectedSuat?.MaSuatChieu === sc.MaSuatChieu 
-                                            ? 'bg-green-600 text-white shadow-md shadow-green-600/40 border-green-600' 
-                                            : 'bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300'
+                                            ? '!bg-green-600 text-white shadow-md shadow-green-600/40 border-green-600' 
+                                            : '!bg-gray-800 border border-gray-700 hover:bg-gray-700 text-gray-300'
                                         }`}
                                     >
                                         {sc.GioBatDau.substring(0, 5)} - {sc.phong_chieu.Ten}
@@ -175,11 +175,11 @@ const BookingPage = () => {
 
             {/* Bước 3: Chọn Ghế (Chỉ hiện khi đã chọn suất) */}
             {selectedSuat && (
-                <div className="bg-gray-900 p-8 rounded-xl text-center shadow-2xl border border-gray-800">
+                <div className="!bg-gray-900 p-8 rounded-xl text-center shadow-2xl border border-gray-800">
                     <h3 className="text-xl font-bold mb-6 text-white">Sơ Đồ Ghế Ngồi: {selectedSuat.phong_chieu.Ten}</h3>
 
                     {/* Màn Hình */}
-                    <div className="w-full bg-gray-700/50 text-gray-400 py-2 mb-10 rounded-t-xl border-b-4 border-gray-500 font-bold uppercase tracking-wider">
+                    <div className="w-full !g-gray-700/50 text-gray-400 py-2 mb-10 rounded-t-xl border-b-4 border-gray-500 font-bold uppercase tracking-wider">
                         MÀN HÌNH
                     </div>
                     
@@ -201,9 +201,9 @@ const BookingPage = () => {
                                             onClick={() => !isSold && toggleSeat(row, num)}
                                             disabled={isSold}
                                             className={`w-10 h-10 rounded-md text-sm font-bold border ${
-                                                isSold ? 'bg-gray-600 text-gray-400 cursor-not-allowed border-gray-500' 
-                                                : isSelected ? 'bg-red-600 text-white border-red-700 hover:bg-red-700 shadow-md shadow-red-600/40' 
-                                                : 'bg-gray-300 text-black border-gray-400 hover:bg-gray-200'
+                                                isSold ? '!bg-gray-600 text-gray-400 cursor-not-allowed border-gray-500' 
+                                                : isSelected ? '!bg-red-600 text-white border-red-700 hover:bg-red-700 shadow-md shadow-red-600/40' 
+                                                : '!bg-gray-300 text-black border-gray-400 hover:bg-gray-200'
                                             } transition duration-150`}
                                         >
                                             {num}
@@ -227,7 +227,7 @@ const BookingPage = () => {
                         <h3 className="text-xl font-bold mb-4 text-white text-left">🍿 Chọn Combo Bắp Nước</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {combos.map(combo => (
-                                <div key={combo.MaHang} className="bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700">
+                                <div key={combo.MaHang} className="!bg-gray-800 p-4 rounded-lg flex justify-between items-center border border-gray-700">
                                     <div className="text-left">
                                         <p className="font-bold text-white">{combo.TenHang}</p>
                                         <p className="text-sm text-gray-400">{combo.MoTa}</p>
@@ -236,12 +236,12 @@ const BookingPage = () => {
                                     <div className="flex items-center gap-3">
                                         <button 
                                             onClick={() => handleComboChange(combo.MaHang, -1)}
-                                            className="w-8 h-8 rounded-full bg-gray-700 text-white hover:bg-gray-600 flex items-center justify-center font-bold"
+                                            className="w-8 h-8 rounded-full !bg-gray-700 text-white hover:bg-gray-600 flex items-center justify-center font-bold"
                                         >-</button>
                                         <span className="text-white font-bold w-6 text-center">{selectedCombos[combo.MaHang] || 0}</span>
                                         <button 
                                             onClick={() => handleComboChange(combo.MaHang, 1)}
-                                            className="w-8 h-8 rounded-full bg-[#00E5FF] text-black hover:bg-[#00cce6] flex items-center justify-center font-bold"
+                                            className="w-8 h-8 rounded-full !bg-[#00E5FF] text-black hover:!bg-[#00cce6] flex items-center justify-center font-bold"
                                         >+</button>
                                     </div>
                                 </div>
@@ -263,8 +263,8 @@ const BookingPage = () => {
                             disabled={selectedSeats.length === 0}
                             className={`px-10 py-3 rounded-xl font-bold transition text-lg ${
                                 selectedSeats.length > 0 
-                                ? 'bg-[#00E5FF] text-black hover:bg-[#00cce6] shadow-[0_0_15px_rgba(0,229,255,0.4)]'
-                                : 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                                ?'!bg-[#00E5FF] !text-black hover:!bg-[#00cce6] shadow-[0_0_15px_rgba(0,229,255,0.4)]'
+                                :'!bg-gray-700 !text-gray-500 cursor-not-allowed opacity-60'
                             }`}
                         >
                             TIẾP TỤC THANH TOÁN
