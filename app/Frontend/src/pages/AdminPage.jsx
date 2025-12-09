@@ -105,7 +105,7 @@ const AdminPage = () => {
                         <button onClick={openAdd} className="bg-[#00E5FF] text-black px-5 py-2 rounded-lg font-bold hover:bg-[#00cce6] transition shadow-lg">
                             + Thêm Phim Mới
                         </button>
-                        <button onClick={fetchPhims} className="bg-gray-800 text-white px-5 py-2 rounded-lg font-bold hover:bg-gray-700 transition border border-gray-600">
+                        <button onClick={fetchPhims} className="!bg-gray-800 text-white px-5 py-2 rounded-lg font-bold hover:bg-gray-700 transition border border-gray-600">
                             🔄 Refresh
                         </button>
                     </div>
@@ -174,8 +174,8 @@ const AdminPage = () => {
                                         </span>
                                     </td>
                                     <td className="p-4 flex justify-end gap-2 whitespace-nowrap">
-                                        <button onClick={() => openEdit(p)} className="bg-blue-600/30 text-blue-300 hover:bg-blue-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Sửa</button>
-                                        <button onClick={() => handleDelete(p.MaPhim)} className="bg-red-600/30 text-red-300 hover:bg-red-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Xóa</button>
+                                        <button onClick={() => openEdit(p)} className="!bg-blue-600/30 text-blue-300 hover:!bg-blue-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Sửa</button>
+                                        <button onClick={() => handleDelete(p.MaPhim)} className="!bg-red-600/30 text-red-300 hover:!bg-red-600 hover:text-white px-3 py-1 rounded transition text-sm font-semibold">Xóa</button>
                                     </td>
                                 </tr>
                             ))}
@@ -187,7 +187,7 @@ const AdminPage = () => {
             {/* Modal Form (Đã tối ưu style) */}
             {isModalOpen && (
                 <div className="fixed inset-0 bg-black/90 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-                    <div className="bg-gray-900 p-8 rounded-2xl w-full max-w-2xl border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
+                    <div className="!bg-gray-900 p-8 rounded-2xl w-full max-w-2xl border border-gray-700 shadow-2xl max-h-[90vh] overflow-y-auto">
                         <h2 className="text-2xl font-bold mb-6 text-white border-b border-gray-700 pb-3">{editingPhim ? 'Chỉnh Sửa Phim' : 'Thêm Phim Mới'}</h2>
                         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Input Fields (Đã sắp xếp lại và tối ưu style) */}
@@ -237,8 +237,8 @@ const AdminPage = () => {
                             </div>
 
                             <div className="col-span-2 flex justify-end gap-4 mt-4">
-                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 font-semibold">Hủy</button>
-                                <button type="submit" className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg hover:bg-[#00cce6] shadow-lg">Lưu</button>
+                                <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2 !bg-gray-700 text-white rounded-lg hover:!bg-gray-600 font-semibold">Hủy</button>
+                                <button type="submit" className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg hover:!bg-[#00cce6] shadow-lg">Lưu</button>
                             </div>
                         </form>
                     </div>
