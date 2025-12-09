@@ -38,7 +38,7 @@ BEGIN
         p.MaPhim,
         p.TenPhim,
         COUNT(v.MaVe) AS SoVeDaBan,
-        FUNC_TinhDoanhThuVe(p.MaPhim) AS TongDoanhThu
+        COALESCE(SUM(v.GiaVeCuoi), 0) AS TongDoanhThu
     FROM PHIM p
     LEFT JOIN SUAT_CHIEU s ON p.MaPhim = s.MaPhim
     LEFT JOIN VE_XEM_PHIM v ON s.MaSuatChieu = v.MaSuatChieu AND v.TrangThai = 'Đã thanh toán'
@@ -74,4 +74,44 @@ BEGIN
     WHERE TenPhim LIKE CONCAT('%', p_TuKhoa, '%')
     ORDER BY NgayKhoiChieu DESC;
 END$$
+
+DELIMITER ;
+/* =======================================================================
+   STORED PROCEDURE TÌM KIẾM/LỌC PHIM (Đã cập nhật gọi hàm đánh giá)
+   ======================================================================= */
+
+DELIMITER $$
+DROP PROCEDURE IF EXISTS sp_LocPhimTheoNhieuDieuKien$$
+
+CREATE PROCEDURE sp_LocPhimTheoNhieuDieuKien (
+    IN p_TenPhim VARCHAR(200),
+    IN p_TheLoai VARCHAR(50),
+    IN p_Nam INT
+)
+BEGIN
+    -- Xử lý tham số rỗng
+    IF p_TheLoai = '' OR p_TheLoai IS NULL THEN SET p_TheLoai = NULL; END IF;
+    IF p_TenPhim = '' OR p_TenPhim IS NULL THEN SET p_TenPhim = NULL; END IF;
+    IF p_Nam = 0 OR p_Nam IS NULL THEN SET p_Nam = NULL; END IF;
+
+    -- Query chính: Đã tích hợp gọi hàm FUNC_DanhGiaHieuQuaPhim
+    SELECT 
+        P.MaPhim,
+        P.TenPhim,
+        P.NgayKhoiChieu,
+        TL.TheLoai,
+        FUNC_DanhGiaHieuQuaPhim(P.MaPhim) AS HieuQua -- Tự động tính đánh giá
+    FROM 
+        PHIM P
+    JOIN 
+        THE_LOAI_PHIM TL ON P.MaPhim = TL.MaPhim
+    WHERE 
+        (p_TenPhim IS NULL OR P.TenPhim LIKE CONCAT('%', p_TenPhim, '%'))
+        AND (p_TheLoai IS NULL OR TL.TheLoai = p_TheLoai)
+        AND (p_Nam IS NULL OR YEAR(P.NgayKhoiChieu) = p_Nam)
+    ORDER BY 
+        P.NgayKhoiChieu DESC,
+        P.TenPhim ASC;
+END$$
+
 DELIMITER ;

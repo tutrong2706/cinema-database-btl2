@@ -1,102 +1,79 @@
---  Demo Nghiệp vụ 1: Quản lý Phim & Suất Chiếu (Admin)
--- Mục tiêu: Thêm phim mới và kiểm tra ràng buộc ngày chiếu.
+USE CINEMA;
 
--- 1. Thêm một phim mới (Thành công)
--- Phim 'Đất Rừng Phương Nam', khởi chiếu 2024-12-20
-CALL SP_Insert_PHIM(
-    'PH999', N'Đất Rừng Phương Nam', 110, N'Tiếng Việt', N'Việt Nam', 
-    N'Nguyễn Quang Dũng', N'Hồng Ánh', '2024-12-20', 
-    N'Phim lịch sử', 13, N'Lịch sử'
-);
--- Kiểm tra phim đã vào chưa
+-- =======================================================================
+-- 1. DEMO HÀM (FUNCTION) - CÓ SỬ DỤNG CON TRỎ (CURSOR) [cite: 37, 39]
+-- =======================================================================
+
+-- 1.1. Hàm đánh giá hiệu quả phim (Dùng Cursor duyệt suất chiếu)
+-- Mong đợi: Trả về kết quả 'Rất Hot', 'Bình thường' hoặc 'Cần cải thiện' dựa trên dữ liệu thật.
+SELECT MaPhim, TenPhim, FUNC_DanhGiaHieuQuaPhim(MaPhim) AS DanhGia 
+FROM PHIM;
+
+-- 1.2. Hàm xếp hạng thành viên (Dùng Cursor duyệt đơn hàng tích lũy)
+-- Mong đợi: Tính tổng tiền các đơn đã thanh toán và trả về hạng (Gold, Silver...)
+SELECT MaNguoiDung, HoTen, FUNC_XepHangThanhVien(MaNguoiDung) AS HangTV 
+FROM TAI_KHOAN 
+WHERE MaNguoiDung IN ('KH001', 'KH005'); -- KH005 mua nhiều nên hạng cao
+
+
+-- =======================================================================
+-- 2. DEMO THỦ TỤC (STORED PROCEDURE) - THÊM/XÓA/SỬA & VALIDATE [cite: 13, 15]
+-- =======================================================================
+
+-- 2.1. Thêm Phim với dữ liệu SAI (Validate dữ liệu)
+-- Mong đợi: Báo lỗi "Thời lượng phim phải lớn hơn 0"
+CALL SP_Insert_PHIM('PH999', 'Phim Lỗi', -100, 'Việt Nam', 'VN', 'Director', 'Actor', '2025-01-01', 'Mo ta', 18, 'Action');
+
+-- 2.2. Thêm Phim với dữ liệu ĐÚNG
+-- Mong đợi: Thành công (1 row affected)
+CALL SP_Insert_PHIM('PH999', 'Phim Demo Báo Cáo', 120, 'Tiếng Việt', 'VN', 'Nhóm Demo', 'A & B', '2025-12-01', 'Mô tả test', 13, 'Học Tập');
+
+-- Kiểm tra lại:
 SELECT * FROM PHIM WHERE MaPhim = 'PH999';
 
--- 2. Thử thêm suất chiếu SAI quy định (Trigger TRG_SC_CheckNgayPhim)
--- Ngày chiếu (2024-12-01) < Ngày khởi chiếu (2024-12-20) -> Sẽ báo lỗi
+-- 2.3. Xóa Phim đang có suất chiếu (Ràng buộc nghiệp vụ) [cite: 18]
+-- Mong đợi: Báo lỗi "Không thể xóa Phim này. Phim vẫn còn suất chiếu..."
+-- (Giả sử PH001 đang có suất chiếu chưa chiếu)
+CALL SP_Delete_PHIM_Flexible('PH001');
+
+-- 2.4. Xóa Phim vừa tạo (An toàn)
+-- Mong đợi: Thành công
+CALL SP_Delete_PHIM_Flexible('PH999');
+
+
+-- =======================================================================
+-- 3. DEMO TRIGGER - RÀNG BUỘC NGHIỆP VỤ & TÍNH TOÁN [cite: 20, 25]
+-- =======================================================================
+
+-- 3.1. Trigger RB1: Ngày chiếu < Ngày khởi chiếu [cite: 21]
+-- Phim PH001 khởi chiếu 2019. Cố tình tạo suất chiếu năm 2018.
+-- Mong đợi: Báo lỗi "Ngày chiếu phải >= ngày khởi chiếu phim"
 INSERT INTO SUAT_CHIEU (MaSuatChieu, MaPhim, MaPhong, NgayChieu, GioBatDau, GioKetThuc, GiaVeCoBan, TrangThai)
-VALUES ('SC999', 'PH999', 'P001', '2024-12-01', '18:00', '20:00', 100000, 'Đang mở');
--- (Mong đợi: Error Code: 1644. Ngày chiếu phải >= ngày khởi chiếu phim.)
+VALUES ('SC_FAIL', 'PH001', 'P001', '2018-01-01', '10:00', '12:00', 50000, 'Đang mở');
 
--- 3. Thêm suất chiếu ĐÚNG quy định
-INSERT INTO SUAT_CHIEU (MaSuatChieu, MaPhim, MaPhong, NgayChieu, GioBatDau, GioKetThuc, GiaVeCoBan, TrangThai)
-VALUES ('SC999', 'PH999', 'P001', '2024-12-25', '18:00', '20:00', 100000, 'Đang mở');
+-- 3.2. Trigger RB2: Tính toán thuộc tính dẫn xuất (Tổng tiền đơn hàng) [cite: 25]
+-- Bước 1: Tạo đơn hàng rỗng -> Tổng tiền = 0
+INSERT INTO DON_HANG (MaDonHang, MaNguoiDung_KH, PhuongThuc, ThoiGianDat, TongTien, TrangThai)
+VALUES ('DH_TEST', 'KH001', 'Tại quầy', NOW(), 0, 'Chờ thanh toán');
 
--- Demo Nghiệp vụ 2: Quy trình Đặt vé & Mua bắp nước (Khách hàng)
--- Mục tiêu: Tạo đơn hàng, đặt vé, mua bắp nước, hệ thống tự tính tiền và xử lý thanh toán.
+-- Bước 2: Thêm 2 ly nước (Giá 30k/ly) vào đơn -> Trigger tự chạy
+INSERT INTO GOM (MaDonHang, MaHang, SoLuong, DonGia) VALUES ('DH_TEST', 'MH002', 2, 30000);
 
--- 1. Khách hàng KH001 tạo đơn hàng mới
-CALL SP_TaoDonHang('DH_DEMO', 'KH001', 'App Mobile');
+-- Bước 3: Kiểm tra Tổng tiền trong Đơn hàng
+-- Mong đợi: TongTien tự động nhảy lên 60000
+SELECT MaDonHang, TongTien FROM DON_HANG WHERE MaDonHang = 'DH_TEST';
 
--- Kiểm tra đơn hàng vừa tạo (TongTien = 0)
-SELECT * FROM DON_HANG WHERE MaDonHang = 'DH_DEMO';
+-- Dọn dẹp dữ liệu test
+DELETE FROM GOM WHERE MaDonHang = 'DH_TEST';
+DELETE FROM DON_HANG WHERE MaDonHang = 'DH_TEST';
 
--- 2. Khách đặt vé cho suất chiếu SC999 vừa tạo
--- Giá vé cơ bản là 100,000. Đặt ghế A1.
-CALL SP_DatVe('VE_DEMO', 'SC999', 'P001', 'A', 1, 'KH001', 'DH_DEMO');
 
--- Kiểm tra:
--- 1. Bảng VE_XEM_PHIM đã có vé.
--- 2. Bảng DON_HANG: TongTien đã tự nhảy lên 100,000 (do SP_DatVe cập nhật).
-SELECT * FROM DON_HANG WHERE MaDonHang = 'DH_DEMO';
+-- =======================================================================
+-- 4. DEMO BÁO CÁO & TÌM KIẾM [cite: 32]
+-- =======================================================================
 
--- 3. Khách mua thêm Combo bắp nước (MH003 - Giá 70,000)
--- Số lượng: 2 combo.
-CALL SP_ThemMatHangVaoDon('DH_DEMO', 'MH003', 2);
-
--- Kiểm tra Trigger TRG_GOM_UpdateTongTien_Insert hoạt động chưa
--- Tổng tiền mong đợi: 100,000 (Vé) + 2 * 70,000 (Bắp) = 240,000
-SELECT MaDonHang, TongTien, TrangThai FROM DON_HANG WHERE MaDonHang = 'DH_DEMO';
-
--- 4. Thanh toán đơn hàng
--- Thêm record vào bảng THANH_TOAN
-INSERT INTO THANH_TOAN (MaThanhToan, MaDonHang, NgayThanhToan, PhuongThuc, TrangThai, SoTien)
-VALUES ('TT_DEMO', 'DH_DEMO', NOW(), 'Thẻ tín dụng', 'Đã thanh toán', 240000);
-
--- Cập nhật trạng thái đơn hàng
-CALL SP_CapNhatTrangThaiDon('DH_DEMO', 'Đã thanh toán');
-
--- Cập nhật trạng thái vé (Trigger TRG_VE_CheckThanhToan sẽ cho phép vì đơn đã thanh toán)
-UPDATE VE_XEM_PHIM SET TrangThai = 'Đã thanh toán' WHERE MaVe = 'VE_DEMO';
-
--- 5. Kiểm tra điểm tích lũy (Trigger TRG_TT_CongDiemThuong)
--- 240,000 VNĐ -> Cộng 24 điểm.
--- Kiểm tra điểm của KH001 (Ban đầu là 10, giờ phải là 34)
-SELECT MaNguoiDung, DiemTichLuy FROM KHACH_HANG WHERE MaNguoiDung = 'KH001';
-
--- Demo Nghiệp vụ 3: Kiểm tra các ràng buộc Logic (Negative Test)
--- Mục tiêu: Chứng minh hệ thống ngăn chặn được các thao tác sai.
-
--- 1. Kiểm tra trùng ghế
--- Cố tình đặt lại ghế A1 của suất SC999 (đã được KH001 đặt ở trên) cho khách KH002
-CALL SP_TaoDonHang('DH_FAIL', 'KH002', 'Tại quầy');
-
--- Lệnh này sẽ báo lỗi do SP_DatVe kiểm tra ghế trống
-CALL SP_DatVe('VE_FAIL', 'SC999', 'P001', 'A', 1, 'KH002', 'DH_FAIL');
--- (Mong đợi: Error Code: 45000. Ghế này đã được đặt.)
-
--- 2. Kiểm tra đánh giá phim khi chưa xem (Trigger TRG_DG_ChiDaMuaVe)
--- KH002 chưa từng mua vé xem phim 'PH999' (Đất Rừng Phương Nam)
-INSERT INTO DANH_GIA (MaDanhGia, MaNguoiDung, MaPhim, NoiDung, NgayDang, DiemSo)
-VALUES ('DG_FAIL', 'KH002', 'PH999', 'Phim hay lắm', NOW(), 10);
--- (Mong đợi: Error Code: 1644. Chỉ khách đã mua vé xem phim mới được đánh giá)
-
--- 3. Kiểm tra Admin không được đặt hàng (Trigger TRG_DH_KhongChoQTVDat)
--- AD001 là quản trị viên
-CALL SP_TaoDonHang('DH_ADMIN', 'AD001', 'App');
--- (Mong đợi: Error Code: 1644. Quản trị viên không được phép tạo đơn hàng)
-
---Demo Nghiệp vụ 4: Báo cáo & Thống kê
---Mục tiêu: Xem dữ liệu tổng hợp.
-
--- 1. Xem lịch chiếu ngày 25/11/2024 (Dữ liệu mẫu có sẵn)
-CALL SP_XemLichChieu('2024-11-25');
-
--- 2. Xem báo cáo doanh thu theo phim
--- Sẽ thấy phim PH999 vừa bán được 1 vé, doanh thu 100,000
+-- 4.1. Báo cáo doanh thu 
 CALL SP_BaoCaoDoanhThuPhim();
 
--- 3. Xem lịch sử giao dịch của KH001
--- Sẽ thấy đơn hàng DH_DEMO vừa tạo
-CALL SP_LichSuGiaoDich('KH001');
-
-
+-- 4.2. Tìm kiếm phim theo nhiều điều kiện + Tích hợp Hàm đánh giá (admin) 
+CALL sp_LocPhimTheoNhieuDieuKien('Avengers', NULL, NULL);

@@ -180,12 +180,18 @@ const ProfilePage = () => {
                                             </div>
                                             <div className="text-right">
                                                 <p className="text-white font-bold text-xl">{parseInt(order.TongTien).toLocaleString('vi-VN')} đ</p>
-                                                <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 ${
+                                                <span 
+                                                    onClick={() => {
+                                                        if (order.TrangThai === 'Chờ thanh toán') {
+                                                            navigate(`/payment?orderId=${order.MaDonHang}`);
+                                                        }
+                                                    }}
+                                                    className={`inline-block px-3 py-1 rounded-full text-xs font-bold mt-1 cursor-pointer ${
                                                     order.TrangThai === 'Đã thanh toán' ? 'bg-green-500/20 text-green-400' :
                                                     order.TrangThai === 'Hủy' ? 'bg-red-500/20 text-red-400' :
-                                                    'bg-yellow-500/20 text-yellow-400'
+                                                    'bg-yellow-500/20 text-yellow-400 hover:bg-yellow-500/40'
                                                 }`}>
-                                                    {order.TrangThai}
+                                                    {order.TrangThai} {order.TrangThai === 'Chờ thanh toán' && '(Thanh toán ngay)'}
                                                 </span>
                                             </div>
                                         </div>

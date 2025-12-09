@@ -209,7 +209,6 @@ CREATE TABLE VE_XEM_PHIM (
     GiaVeCuoi DECIMAL(18,2) NOT NULL,
     NgayDat DATETIME NOT NULL,
     TrangThai VARCHAR(20) NOT NULL,
-    UNIQUE (MaSuatChieu, MaPhong, HangGhe, SoGhe),
     CHECK (GiaVeCuoi >= 0),
     CHECK (TrangThai IN ('Đã đặt','Đã thanh toán','Hủy')),
     FOREIGN KEY (MaSuatChieu) REFERENCES SUAT_CHIEU(MaSuatChieu) ON DELETE CASCADE,

@@ -10,8 +10,8 @@ datasource db {
 model ap_dung {
   MaVe                    String                  @unique(map: "MaVe") @db.VarChar(20)
   MaKhuyenMai             String                  @db.VarChar(20)
-  ve_xem_phim             ve_xem_phim             @relation(fields: [MaVe], references: [MaVe], onUpdate: Restrict, map: "ap_dung_ibfk_1")
-  chuong_trinh_khuyen_mai chuong_trinh_khuyen_mai @relation(fields: [MaKhuyenMai], references: [MaKhuyenMai], onUpdate: Restrict, map: "ap_dung_ibfk_2")
+  ve_xem_phim             ve_xem_phim             @relation(fields: [MaVe], references: [MaVe], onDelete: NoAction, onUpdate: NoAction, map: "ap_dung_ibfk_1")
+  chuong_trinh_khuyen_mai chuong_trinh_khuyen_mai @relation(fields: [MaKhuyenMai], references: [MaKhuyenMai], onDelete: NoAction, onUpdate: NoAction, map: "ap_dung_ibfk_2")
 
   @@id([MaVe, MaKhuyenMai])
   @@index([MaKhuyenMai], map: "MaKhuyenMai")
@@ -21,7 +21,7 @@ model ca_lam_viec {
   MaCa          String        @id @db.VarChar(20)
   MaNguoiDung   String        @db.VarChar(20)
   CaLamViec     String        @db.VarChar(50)
-  quan_tri_vien quan_tri_vien @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onUpdate: Restrict, map: "ca_lam_viec_ibfk_1")
+  quan_tri_vien quan_tri_vien @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "ca_lam_viec_ibfk_1")
 
   @@index([MaNguoiDung], map: "MaNguoiDung")
 }
@@ -43,8 +43,8 @@ model danh_gia {
   NoiDung     String?    @db.VarChar(1000)
   NgayDang    DateTime   @db.DateTime(0)
   DiemSo      Int
-  khach_hang  khach_hang @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onUpdate: Restrict, map: "danh_gia_ibfk_1")
-  phim        phim       @relation(fields: [MaPhim], references: [MaPhim], onDelete: Cascade, onUpdate: Restrict, map: "danh_gia_ibfk_2")
+  khach_hang  khach_hang @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "danh_gia_ibfk_1")
+  phim        phim       @relation(fields: [MaPhim], references: [MaPhim], onDelete: Cascade, onUpdate: NoAction, map: "danh_gia_ibfk_2")
 
   @@index([MaNguoiDung], map: "MaNguoiDung")
   @@index([MaPhim], map: "MaPhim")
@@ -57,7 +57,7 @@ model don_hang {
   ThoiGianDat    DateTime      @db.DateTime(0)
   TongTien       Decimal       @db.Decimal(18, 2)
   TrangThai      String        @db.VarChar(20)
-  khach_hang     khach_hang    @relation(fields: [MaNguoiDung_KH], references: [MaNguoiDung], onUpdate: Restrict, map: "don_hang_ibfk_1")
+  khach_hang     khach_hang    @relation(fields: [MaNguoiDung_KH], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "don_hang_ibfk_1")
   gom            gom[]
   thanh_toan     thanh_toan?
   ve_xem_phim    ve_xem_phim[]
@@ -70,7 +70,7 @@ model ghe {
   HangGhe     String        @db.VarChar(10)
   SoGhe       Int
   LoaiGhe     String        @db.VarChar(10)
-  phong_chieu phong_chieu   @relation(fields: [MaPhong], references: [MaPhong], onUpdate: Restrict, map: "ghe_ibfk_1")
+  phong_chieu phong_chieu   @relation(fields: [MaPhong], references: [MaPhong], onDelete: NoAction, onUpdate: NoAction, map: "ghe_ibfk_1")
   ve_xem_phim ve_xem_phim[]
 
   @@id([MaPhong, HangGhe, SoGhe])
@@ -81,8 +81,8 @@ model gom {
   MaHang    String   @db.VarChar(20)
   SoLuong   Int
   DonGia    Decimal  @db.Decimal(18, 2)
-  don_hang  don_hang @relation(fields: [MaDonHang], references: [MaDonHang], onUpdate: Restrict, map: "gom_ibfk_1")
-  mat_hang  mat_hang @relation(fields: [MaHang], references: [MaHang], onUpdate: Restrict, map: "gom_ibfk_2")
+  don_hang  don_hang @relation(fields: [MaDonHang], references: [MaDonHang], onDelete: NoAction, onUpdate: NoAction, map: "gom_ibfk_1")
+  mat_hang  mat_hang @relation(fields: [MaHang], references: [MaHang], onDelete: NoAction, onUpdate: NoAction, map: "gom_ibfk_2")
 
   @@id([MaDonHang, MaHang])
   @@index([MaHang], map: "MaHang")
@@ -94,7 +94,7 @@ model khach_hang {
   DiemTichLuy   Int           @default(0)
   danh_gia      danh_gia[]
   don_hang      don_hang[]
-  tai_khoan     tai_khoan     @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onUpdate: Restrict, map: "khach_hang_ibfk_1")
+  tai_khoan     tai_khoan     @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "khach_hang_ibfk_1")
   ve_xem_phim   ve_xem_phim[]
 }
 
@@ -135,7 +135,7 @@ model phong_chieu {
   SucChua        Int
   SoGhe          Int
   ghe            ghe[]
-  rap_chieu_phim rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onUpdate: Restrict, map: "phong_chieu_ibfk_1")
+  rap_chieu_phim rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onDelete: NoAction, onUpdate: NoAction, map: "phong_chieu_ibfk_1")
   suat_chieu     suat_chieu[]
 
   @@index([MaRapPhim], map: "MaRapPhim")
@@ -144,8 +144,8 @@ model phong_chieu {
 model quan_ly {
   MaNguoiDung_QTV String         @db.VarChar(20)
   MaRapPhim       String         @db.VarChar(20)
-  quan_tri_vien   quan_tri_vien  @relation(fields: [MaNguoiDung_QTV], references: [MaNguoiDung], onUpdate: Restrict, map: "quan_ly_ibfk_1")
-  rap_chieu_phim  rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onUpdate: Restrict, map: "quan_ly_ibfk_2")
+  quan_tri_vien   quan_tri_vien  @relation(fields: [MaNguoiDung_QTV], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "quan_ly_ibfk_1")
+  rap_chieu_phim  rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onDelete: NoAction, onUpdate: NoAction, map: "quan_ly_ibfk_2")
 
   @@id([MaNguoiDung_QTV, MaRapPhim])
   @@index([MaRapPhim], map: "MaRapPhim")
@@ -158,7 +158,7 @@ model quan_tri_vien {
   ChucVu        String        @db.VarChar(50)
   ca_lam_viec   ca_lam_viec[]
   quan_ly       quan_ly[]
-  tai_khoan     tai_khoan     @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onUpdate: Restrict, map: "quan_tri_vien_ibfk_1")
+  tai_khoan     tai_khoan     @relation(fields: [MaNguoiDung], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "quan_tri_vien_ibfk_1")
 }
 
 model rap_chieu_phim {
@@ -182,8 +182,8 @@ model suat_chieu {
   GioKetThuc  DateTime      @db.Time(0)
   GiaVeCoBan  Decimal       @db.Decimal(18, 2)
   TrangThai   String        @db.VarChar(20)
-  phim        phim          @relation(fields: [MaPhim], references: [MaPhim], onDelete: Cascade, onUpdate: Restrict, map: "suat_chieu_ibfk_1")
-  phong_chieu phong_chieu   @relation(fields: [MaPhong], references: [MaPhong], onUpdate: Restrict, map: "suat_chieu_ibfk_2")
+  phim        phim          @relation(fields: [MaPhim], references: [MaPhim], onDelete: Cascade, onUpdate: NoAction, map: "suat_chieu_ibfk_1")
+  phong_chieu phong_chieu   @relation(fields: [MaPhong], references: [MaPhong], onDelete: NoAction, onUpdate: NoAction, map: "suat_chieu_ibfk_2")
   ve_xem_phim ve_xem_phim[]
 
   @@index([MaPhim], map: "MaPhim")
@@ -209,13 +209,13 @@ model thanh_toan {
   PhuongThuc    String   @db.VarChar(50)
   TrangThai     String   @db.VarChar(20)
   SoTien        Decimal  @db.Decimal(18, 2)
-  don_hang      don_hang @relation(fields: [MaDonHang], references: [MaDonHang], onUpdate: Restrict, map: "thanh_toan_ibfk_1")
+  don_hang      don_hang @relation(fields: [MaDonHang], references: [MaDonHang], onDelete: NoAction, onUpdate: NoAction, map: "thanh_toan_ibfk_1")
 }
 
 model the_loai_phim {
   MaPhim  String @db.VarChar(20)
   TheLoai String @db.VarChar(50)
-  phim    phim   @relation(fields: [MaPhim], references: [MaPhim], onUpdate: Restrict, map: "the_loai_phim_ibfk_1")
+  phim    phim   @relation(fields: [MaPhim], references: [MaPhim], onDelete: NoAction, onUpdate: NoAction, map: "the_loai_phim_ibfk_1")
 
   @@id([MaPhim, TheLoai])
 }
@@ -223,8 +223,8 @@ model the_loai_phim {
 model trinh_chieu {
   MaRapPhim      String         @db.VarChar(20)
   MaPhim         String         @db.VarChar(20)
-  rap_chieu_phim rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onUpdate: Restrict, map: "trinh_chieu_ibfk_1")
-  phim           phim           @relation(fields: [MaPhim], references: [MaPhim], onUpdate: Restrict, map: "trinh_chieu_ibfk_2")
+  rap_chieu_phim rap_chieu_phim @relation(fields: [MaRapPhim], references: [MaRapPhim], onDelete: NoAction, onUpdate: NoAction, map: "trinh_chieu_ibfk_1")
+  phim           phim           @relation(fields: [MaPhim], references: [MaPhim], onDelete: NoAction, onUpdate: NoAction, map: "trinh_chieu_ibfk_2")
 
   @@id([MaRapPhim, MaPhim])
   @@index([MaPhim], map: "MaPhim")
@@ -242,12 +242,12 @@ model ve_xem_phim {
   NgayDat        DateTime   @db.DateTime(0)
   TrangThai      String     @db.VarChar(20)
   ap_dung        ap_dung?
-  suat_chieu     suat_chieu @relation(fields: [MaSuatChieu], references: [MaSuatChieu], onDelete: Cascade, onUpdate: Restrict, map: "ve_xem_phim_ibfk_1")
-  ghe            ghe        @relation(fields: [MaPhong, HangGhe, SoGhe], references: [MaPhong, HangGhe, SoGhe], onUpdate: Restrict, map: "ve_xem_phim_ibfk_2")
-  khach_hang     khach_hang @relation(fields: [MaNguoiDung_KH], references: [MaNguoiDung], onUpdate: Restrict, map: "ve_xem_phim_ibfk_3")
-  don_hang       don_hang   @relation(fields: [MaDonHang], references: [MaDonHang], onUpdate: Restrict, map: "ve_xem_phim_ibfk_4")
+  suat_chieu     suat_chieu @relation(fields: [MaSuatChieu], references: [MaSuatChieu], onDelete: Cascade, onUpdate: NoAction, map: "ve_xem_phim_ibfk_1")
+  ghe            ghe        @relation(fields: [MaPhong, HangGhe, SoGhe], references: [MaPhong, HangGhe, SoGhe], onDelete: NoAction, onUpdate: NoAction, map: "ve_xem_phim_ibfk_2")
+  khach_hang     khach_hang @relation(fields: [MaNguoiDung_KH], references: [MaNguoiDung], onDelete: NoAction, onUpdate: NoAction, map: "ve_xem_phim_ibfk_3")
+  don_hang       don_hang   @relation(fields: [MaDonHang], references: [MaDonHang], onDelete: NoAction, onUpdate: NoAction, map: "ve_xem_phim_ibfk_4")
 
-  @@unique([MaSuatChieu, MaPhong, HangGhe, SoGhe], map: "MaSuatChieu")
+  @@index([MaSuatChieu], map: "MaSuatChieu")
   @@index([MaDonHang], map: "MaDonHang")
   @@index([MaNguoiDung_KH], map: "MaNguoiDung_KH")
   @@index([MaPhong, HangGhe, SoGhe], map: "MaPhong")

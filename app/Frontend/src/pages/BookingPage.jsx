@@ -16,6 +16,7 @@ const BookingPage = () => {
     const [selectedSeats, setSelectedSeats] = useState([]);
     const [combos, setCombos] = useState([]);
     const [selectedCombos, setSelectedCombos] = useState({}); // { MaHang: quantity }
+    const [bookedSeats, setBookedSeats] = useState([]);
 
     // 1. Load danh sách rạp để chọn
     useEffect(() => {
@@ -28,6 +29,17 @@ const BookingPage = () => {
     useEffect(() => {
         handleFindSuatChieu();
     }, [ngayChieu]);
+
+    // Fetch ghế đã đặt khi chọn suất chiếu
+    useEffect(() => {
+        if (selectedSuat) {
+            axiosClient.get(`/auth/suat-chieus/${selectedSuat.MaSuatChieu}/booked-seats`)
+                .then(res => setBookedSeats(res.data.meta || []))
+                .catch(err => console.error(err));
+        } else {
+            setBookedSeats([]);
+        }
+    }, [selectedSuat]);
 
     // 2. Tìm suất chiếu khi chọn Rạp + Ngày
     const handleFindSuatChieu = () => {
@@ -192,8 +204,8 @@ const BookingPage = () => {
                                     const num = i + 1;
                                     const isSelected = selectedSeats.some(s => s.HangGhe === row && s.SoGhe === num);
                                     
-                                    // Tạm thời giả định Ghế A1, B5, C8, D2 là đã Bán
-                                    const isSold = (row === 'A' && num === 1) || (row === 'B' && num === 5) || (row === 'C' && num === 8) || (row === 'D' && num === 2);
+                                    // Kiểm tra ghế đã bán từ API
+                                    const isSold = bookedSeats.some(s => s.HangGhe === row && s.SoGhe === num);
 
                                     return (
                                         <button

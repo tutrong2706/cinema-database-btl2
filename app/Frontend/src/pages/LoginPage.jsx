@@ -10,8 +10,14 @@ const LoginPage = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
         try {
+            // Tự động thêm @example.com nếu người dùng không nhập
+            let submitEmail = email;
+            if (!submitEmail.includes('@')) {
+                submitEmail += '@example.com';
+            }
+
             const res = await axiosClient.post('/auth/login', {
-                email,
+                email: submitEmail,
                 password
             });
             
@@ -38,11 +44,11 @@ const LoginPage = () => {
                 <div className="mb-5">
                     <label className="block text-gray-400 mb-2 text-sm font-medium">Email</label>
                     <input 
-                        type="email" 
+                        type="text" 
                         className="w-full p-3 rounded-lg bg-gray-800 text-white border border-gray-700 focus:border-[#00E5FF] outline-none transition placeholder-gray-500"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        placeholder="a@example.com"
+                        placeholder="Nhập email hoặc tên người dùng"
                         required
                     />
                 </div>

@@ -632,6 +632,50 @@ async getUserProfile(req, res, next) {
             next(error);
         }
     }
+
+    async getBookedSeats(req, res, next) {
+        try {
+            const { MaSuatChieu } = req.params;
+            const result = await authService.getBookedSeats(MaSuatChieu);
+            const response = handleSuccessResponse(200, "Lấy danh sách ghế đã đặt thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async payOrder(req, res, next) {
+        try {
+            const { MaDonHang } = req.params;
+            const result = await authService.payOrder(MaDonHang);
+            const response = handleSuccessResponse(200, "Thanh toán thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async cancelOrder(req, res, next) {
+        try {
+            const { MaDonHang } = req.params;
+            const result = await authService.cancelOrder(MaDonHang);
+            const response = handleSuccessResponse(200, "Hủy đơn hàng thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
+
+    async getOrderDetails(req, res, next) {
+        try {
+            const { MaDonHang } = req.params;
+            const result = await authService.getOrderDetails(MaDonHang);
+            const response = handleSuccessResponse(200, "Lấy chi tiết đơn hàng thành công", result);
+            res.status(200).json(response);
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 export default new AuthController();

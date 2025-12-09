@@ -296,3 +296,28 @@ BEGIN
 END$$
 
 DELIMITER ;
+/* =======================================================================
+   RB10 – KIỂM TRA GHẾ TRỐNG:
+   Thay thế cho UNIQUE constraint: Chỉ cho phép đặt nếu ghế chưa có vé
+   hoặc vé cũ đã bị Hủy.
+   ======================================================================= */
+DELIMITER $$
+
+CREATE TRIGGER TRG_VE_CheckGheTrong
+BEFORE INSERT ON VE_XEM_PHIM
+FOR EACH ROW
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM VE_XEM_PHIM
+        WHERE MaSuatChieu = NEW.MaSuatChieu
+          AND MaPhong = NEW.MaPhong
+          AND HangGhe = NEW.HangGhe
+          AND SoGhe = NEW.SoGhe
+          AND TrangThai <> 'Hủy'
+    ) THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Ghế này đã được đặt bởi người khác.';
+    END IF;
+END$$
+
+DELIMITER ;

@@ -19,5 +19,9 @@ authRouter.get('/filter', authController.filterPhims);
 authRouter.get('/profile', authMiddleware, authController.getUserProfile);
 authRouter.get('/combos', authController.getCombos);
 authRouter.post('/booking', authMiddleware, authController.booking);
+authRouter.get('/suat-chieus/:MaSuatChieu/booked-seats', authController.getBookedSeats);
+authRouter.post('/orders/:MaDonHang/pay', authMiddleware, authController.payOrder);
+authRouter.post('/orders/:MaDonHang/cancel', authMiddleware, authController.cancelOrder);
+authRouter.get('/orders/:MaDonHang', authMiddleware, authController.getOrderDetails);
 
 export default authRouter;

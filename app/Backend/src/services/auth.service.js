@@ -387,13 +387,14 @@ class authService {
     //  ĐẶT VÉ (Booking)
     // ================================
     async booking(userId, data) {
-        const { MaSuatChieu, MaPhong, DanhSachGhe, DanhSachCombo } = data;
+        const { MaSuatChieu, MaPhong, DanhSachGhe, DanhSachCombo, isPayLater } = data;
         // DanhSachGhe: [{ HangGhe: 'A', SoGhe: 1 }, ...]
         // DanhSachCombo: [{ MaHang: 'MH01', SoLuong: 2 }, ...]
 
         return await prisma.$transaction(async (tx) => {
             // 1. Tạo Đơn Hàng
             const maDonHang = "DH" + Date.now();
+            const trangThai = isPayLater ? "Chờ thanh toán" : "Đã thanh toán";
             
             // Tính tổng tiền vé
             const suatChieu = await tx.suat_chieu.findUnique({
@@ -423,8 +424,8 @@ class authService {
                     MaNguoiDung_KH: userId,
                     PhuongThuc: "Thẻ tín dụng", // Mặc định hoặc từ FE
                     ThoiGianDat: new Date(),
-                    TongTien: tongTien,
-                    TrangThai: "Đã thanh toán" // Giả lập thanh toán thành công luôn
+                    TongTien: 0, // Đặt về 0 vì Trigger trong DB sẽ tự động cộng tiền Vé và Combo vào
+                    TrangThai: trangThai
                 }
             });
 
@@ -441,7 +442,7 @@ class authService {
                         MaDonHang: maDonHang,
                         GiaVeCuoi: giaVe,
                         NgayDat: new Date(),
-                        TrangThai: "Đã thanh toán"
+                        TrangThai: trangThai === "Đã thanh toán" ? "Đã thanh toán" : "Đã đặt"
                     }
                 });
             }
@@ -463,25 +464,157 @@ class authService {
                 }
             }
 
-            // 4. Tạo Thanh Toán (Để kích hoạt Trigger cộng điểm & xếp hạng)
-            await tx.thanh_toan.create({
-                data: {
-                    MaThanhToan: "TT" + Date.now(),
-                    MaDonHang: maDonHang,
-                    NgayThanhToan: new Date(),
-                    PhuongThuc: "Thẻ tín dụng",
-                    TrangThai: "Đã thanh toán",
-                    SoTien: tongTien
-                }
-            });
+            // 4. Tạo Thanh Toán (Chỉ khi thanh toán ngay)
+            if (!isPayLater) {
+                await tx.thanh_toan.create({
+                    data: {
+                        MaThanhToan: "TT" + Date.now(),
+                        MaDonHang: maDonHang,
+                        NgayThanhToan: new Date(),
+                        PhuongThuc: "Thẻ tín dụng",
+                        TrangThai: "Đã thanh toán",
+                        SoTien: tongTien
+                    }
+                });
+            }
 
             return { MaDonHang: maDonHang, TongTien: tongTien };
         });
     }
 
     // ================================
+    //  THANH TOÁN ĐƠN HÀNG (Pay Order)
+    // ================================
+    async payOrder(MaDonHang) {
+        return await prisma.$transaction(async (tx) => {
+            const donHang = await tx.don_hang.findUnique({ where: { MaDonHang } });
+            if (!donHang) throw new NotFoundError("Đơn hàng không tồn tại");
+            if (donHang.TrangThai === "Đã thanh toán") throw new BadRequestError("Đơn hàng đã được thanh toán");
+            if (donHang.TrangThai === "Hủy") throw new BadRequestError("Đơn hàng đã bị hủy");
+
+            // 1. Tạo Thanh Toán TRƯỚC (Để Trigger TRG_VE_CheckThanhToan không chặn update vé)
+            // Lưu ý: Trigger TRG_TT_CongDiemThuong_Insert trong DB sẽ tự động update DON_HANG -> 'Đã thanh toán'
+            await tx.thanh_toan.create({
+                data: {
+                    MaThanhToan: "TT" + Date.now(),
+                    MaDonHang: MaDonHang,
+                    NgayThanhToan: new Date(),
+                    PhuongThuc: donHang.PhuongThuc,
+                    TrangThai: "Đã thanh toán",
+                    SoTien: donHang.TongTien
+                }
+            });
+
+            // 2. Cập nhật Vé (Lúc này đã có Thanh Toán nên Trigger cho phép)
+            await tx.ve_xem_phim.updateMany({
+                where: { MaDonHang },
+                data: { TrangThai: "Đã thanh toán" }
+            });
+
+            return { message: "Thanh toán thành công" };
+        });
+    }
+
+    // ================================
+    //  HỦY ĐƠN HÀNG (Cancel Order)
+    // ================================
+    async cancelOrder(MaDonHang) {
+        return await prisma.$transaction(async (tx) => {
+            const donHang = await tx.don_hang.findUnique({ where: { MaDonHang } });
+            if (!donHang) throw new NotFoundError("Đơn hàng không tồn tại");
+            if (donHang.TrangThai === "Đã thanh toán") throw new BadRequestError("Không thể hủy đơn hàng đã thanh toán");
+
+            // Cập nhật Đơn Hàng
+            await tx.don_hang.update({
+                where: { MaDonHang },
+                data: { TrangThai: "Hủy" }
+            });
+
+            // Cập nhật Vé
+            await tx.ve_xem_phim.updateMany({
+                where: { MaDonHang },
+                data: { TrangThai: "Hủy" }
+            });
+
+            return { message: "Hủy đơn hàng thành công" };
+        });
+    }
+
+    // ================================
+    //  LẤY CHI TIẾT ĐƠN HÀNG
+    // ================================
+    async getOrderDetails(MaDonHang) {
+        const donHang = await prisma.don_hang.findUnique({
+            where: { MaDonHang },
+            include: {
+                ve_xem_phim: {
+                    include: {
+                        suat_chieu: {
+                            include: {
+                                phim: true,
+                                phong_chieu: true
+                            }
+                        }
+                    }
+                },
+                gom: {
+                    include: {
+                        mat_hang: true
+                    }
+                }
+            }
+        });
+
+        if (!donHang) throw new NotFoundError("Đơn hàng không tồn tại");
+
+        // Format lại dữ liệu cho FE dễ dùng
+        const veDauTien = donHang.ve_xem_phim[0];
+        const suatChieu = veDauTien ? veDauTien.suat_chieu : null;
+
+        return {
+            MaDonHang: donHang.MaDonHang,
+            TrangThai: donHang.TrangThai,
+            TongTien: donHang.TongTien,
+            ThoiGianDat: donHang.ThoiGianDat,
+            suatChieu: suatChieu ? {
+                MaSuatChieu: suatChieu.MaSuatChieu,
+                GioBatDau: suatChieu.GioBatDau,
+                NgayChieu: suatChieu.NgayChieu,
+                phim: suatChieu.phim,
+                phong_chieu: suatChieu.phong_chieu
+            } : null,
+            seats: donHang.ve_xem_phim.map(v => ({ HangGhe: v.HangGhe, SoGhe: v.SoGhe })),
+            combos: donHang.gom.map(g => ({
+                MaHang: g.MaHang,
+                TenHang: g.mat_hang.TenHang,
+                SoLuong: g.SoLuong,
+                DonGia: g.DonGia
+            }))
+        };
+    }
+
+    // ================================
     //  BÁO CÁO DOANH THU (MOVED TO ADMIN SERVICE)
     // ================================
+
+    // ================================
+    //  LẤY GHẾ ĐÃ ĐẶT
+    // ================================
+    async getBookedSeats(MaSuatChieu) {
+        const bookedSeats = await prisma.ve_xem_phim.findMany({
+            where: {
+                MaSuatChieu: MaSuatChieu,
+                TrangThai: {
+                    not: 'Hủy'
+                }
+            },
+            select: {
+                HangGhe: true,
+                SoGhe: true
+            }
+        });
+        return bookedSeats;
+    }
 
 }
 

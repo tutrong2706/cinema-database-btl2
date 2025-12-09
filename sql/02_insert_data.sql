@@ -32,7 +32,7 @@ INSERT INTO TAI_KHOAN (MaNguoiDung, HoTen, DiaChi, SDT, GioiTinh, Email, MatKhau
 ('AD003', 'Admin Kế Toán', 'Q3, TP.HCM', '0913333333', 'F', 'admin3@example.com', 'admin3');
 
 INSERT INTO KHACH_HANG (MaNguoiDung, LoaiThanhVien, DiemTichLuy) VALUES
-('KH001', 'Bronze',   32),
+('KH001', 'Bronze',   33),
 ('KH002', 'Silver',   210),
 ('KH003', 'Gold',     682),
 ('KH004', 'Bronze',    0),

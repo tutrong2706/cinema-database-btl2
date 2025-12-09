@@ -102,7 +102,7 @@ const AdminPage = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h1 className="text-3xl font-extrabold text-white border-l-4 border-[#00E5FF] pl-4">QUẢN LÝ PHIM</h1>
                     <div className="flex gap-3">
-                        <button onClick={openAdd} className="bg-[#00E5FF] text-black px-5 py-2 rounded-lg font-bold hover:bg-[#00cce6] transition shadow-lg">
+                        <button onClick={openAdd} className="!bg-[#00E5FF] text-black px-5 py-2 rounded-lg font-bold hover:!bg-[#00cce6] transition shadow-lg">
                             + Thêm Phim Mới
                         </button>
                         <button onClick={fetchPhims} className="!bg-gray-800 text-white px-5 py-2 rounded-lg font-bold hover:bg-gray-700 transition border border-gray-600">
@@ -238,7 +238,7 @@ const AdminPage = () => {
 
                             <div className="col-span-2 flex justify-end gap-4 mt-4">
                                 <button type="button" onClick={() => setIsModalOpen(false)} className="px-6 py-2 !bg-gray-700 text-white rounded-lg hover:!bg-gray-600 font-semibold">Hủy</button>
-                                <button type="submit" className="px-6 py-2 bg-[#00E5FF] text-black font-bold rounded-lg hover:!bg-[#00cce6] shadow-lg">Lưu</button>
+                                <button type="submit" className="px-6 py-2 !bg-[#00E5FF] text-black font-bold rounded-lg hover:!bg-[#00cce6] shadow-lg">Lưu</button>
                             </div>
                         </form>
                     </div>
